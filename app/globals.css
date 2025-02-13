@@ -2,20 +2,35 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
-  color: var(--foreground);
-  background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+}
+button:focus {
+  outline: 1px solid violet;
+}
+.gradient {
+  background-image: linear-gradient(to bottom, #4d00ca, #cf97ff);
+  -webkit-background-clip: text; /* Nécessaire pour appliquer le gradient au texte */
+  color: transparent; /* Assurez-vous que le texte est transparent afin que le gradient soit visible */
+}
+
+.gradient2 {
+  background-image: linear-gradient(to bottom, #6200ff, #e5c7ff);
+  -webkit-background-clip: text; /* Nécessaire pour appliquer le gradient au texte */
+  color: transparent; /* Assurez-vous que le texte est transparent afin que le gradient soit visible */
+}
+
+
+
+@layer base {
+  :root {
+    --radius: 0.5rem;
+    --background: #160E1E; /* Défaut : gris foncé */
+    --foreground: #FFFFFF; /* Défaut : blanc */
+  }
+
+  body {
+    background-color: var(--background); /* Applique le background par défaut */
+    color: var(--foreground); /* Applique la couleur de texte par défaut */
+  }
 }
