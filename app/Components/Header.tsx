@@ -5,6 +5,7 @@ import Image from "next/image";
 import Tiret from "./images/tiret.svg";
 import { CommandDemo } from "./command";
 import { Menu, X } from "lucide-react";
+import profile from './images/profile-test.jpg';
 
 const  Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -62,8 +63,16 @@ const  Header = () => {
       )}
 
       {/* User Dropdown */}
-        <button className=" bg-[#160E1E] h-10 w-10 rounded-full hover:bg-[#160E1E] transition duration-300 border border-[#1d1d1d] text-white rounded-sm px-2 pt-2 pb-1 focus:outline-none focus:ring-2 focus:ring-violet-700">
-        </button>
+      <button className="bg-[#160E1E] h-10 w-10 rounded-full hover:bg-[#160E1E] transition duration-300 border border-[#1d1d1d] text-white px-2 pt-2 pb-1 focus:outline-none focus:ring-2 focus:ring-violet-700 overflow-hidden relative">
+  <Image 
+    src={profile} 
+    alt="Profile" 
+    layout="fill" 
+    className="object-cover rounded-full"
+  />
+</button>
+
+
     </nav>
   );
 };

@@ -77,8 +77,8 @@ const Content = () => {
           <div className="text-[20px] md:text-[26px]" style={{ fontFamily: "Aeonik, sans-serif" }}>
             Tous les Badges que tu as débloqué
           </div>
-          <button className="text-[12.49px] cursor-pointer text-[#7E7F81] bg-[#1B1B1B] hover:bg-[#121212] transition-all duration-200 w-[79px] h-[32px] rounded-[6px] border border-1 border-[#292929] text-[12px] flex justify-center items-center">
-            Browse All
+          <button className="text-[12.49px] text-white cursor-pointer bg-violet-800 hover:bg-violet-600 transition-all duration-200 w-[169px] h-[42px] border border-1 border-violet-500 text-[12px] flex justify-center items-center">
+          🎖️ Voir tous mes Badges &gt;
           </button>
         </div>
 
