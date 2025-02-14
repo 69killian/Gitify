@@ -6,6 +6,7 @@ import Tiret from "./images/tiret.svg";
 import { CommandDemo } from "./command";
 import { Menu, X } from "lucide-react";
 import profile from './images/profile-test.jpg';
+import Link from "next/link";
 
 const  Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -14,7 +15,7 @@ const  Header = () => {
     <nav className="fixed bg-[#0E0913] h-[60px] right-0 left-0 flex justify-between sm:justify-between md:justify-between items-center px-4 lg:px-8 border-b border-white/15 z-50">
       {/* Logo */}
       <div className="flex items-center">
-        <div className="whitespace-nowrap font-poppins font-bold text-[25px] cursor-pointer transition-all duration-200 hover:text-violet-700">Gitify .</div>
+        <div className="whitespace-nowrap font-poppins font-bold text-[25px] cursor-pointer transition-all duration-200 hover:text-violet-700"><Link href={"/"}>Gitify .</Link></div>
       </div>
 
       
@@ -23,9 +24,9 @@ const  Header = () => {
       <Image src={Tiret} alt="Tiret" className="hidden md:block" />
         <div className="flex gap-10 justify-center">
         
-            <div className="text-violet-700">Accueil</div>
+            <div className="text-violet-700">Overview</div>
             <div className="text-white transition duration-300 hover:text-violet-700 cursor-pointer">
-            Guide
+            <Link href={"/guide"}>Guide</Link>
             </div>
             <div className="text-white transition duration-300 hover:text-violet-700 cursor-pointer">
             Twitter
@@ -64,13 +65,13 @@ const  Header = () => {
 
       {/* User Dropdown */}
       <button className="bg-[#160E1E] h-10 w-10 rounded-full hover:bg-[#160E1E] transition duration-300 border border-[#1d1d1d] text-white px-2 pt-2 pb-1 focus:outline-none focus:ring-2 focus:ring-violet-700 overflow-hidden relative">
-  <Image 
-    src={profile} 
-    alt="Profile" 
-    layout="fill" 
-    className="object-cover rounded-full"
-  />
-</button>
+      <Image 
+        src={profile} 
+        alt="Profile" 
+        layout="fill" 
+        className="object-cover rounded-full"
+      />
+    </button>
 
 
     </nav>

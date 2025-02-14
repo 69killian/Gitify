@@ -8,7 +8,7 @@ const Content = () => {
   return (
     <>
       <section className="px-4 md:px-8">
-          <Breadcrumb/>
+          <Breadcrumb pagename="Overview"/>
         {/* Hero Section */}
         <div className="flex flex-col justify-between gap-4">
           {/* Left Content */}

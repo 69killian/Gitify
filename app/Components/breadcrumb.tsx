@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 
-const Breadcrumb = () => {
+const Breadcrumb = ({pagename}: { pagename: string }) => {
   return (
     <nav aria-label="Breadcrumb" className="text-sm text-gray-400 mb-5">
       <ol className="flex space-x-2">
@@ -15,8 +15,8 @@ const Breadcrumb = () => {
           <span className="text-gray-500">/</span>
         </li>
         <li>
-          <Link href="/projects" className="hover:text-violet-700 transition duration-200 text-violet-700">
-            Accueil
+          <Link href={pagename} className="hover:text-violet-700 transition duration-200 text-violet-700">
+            {pagename}
           </Link>
         </li>
       </ol>
