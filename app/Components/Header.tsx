@@ -20,16 +20,16 @@ const  Header = () => {
 
       
       {/* Desktop Menu */}
-      <div className="hidden md:flex gap-[20px] lg:gap-[84px] items-center">
+      <div className="hidden md:flex gap-[20px] lg:gap-[77px] items-center">
       <Image src={Tiret} alt="Tiret" className="hidden md:block" />
         <div className="flex gap-10 justify-center">
         
-            <div className="text-violet-700">Overview</div>
+            <div className="text-violet-700"><Link href={"/"}>Overview</Link></div>
             <div className="text-white transition duration-300 hover:text-violet-700 cursor-pointer">
             <Link href={"/guide"}>Guide</Link>
             </div>
             <div className="text-white transition duration-300 hover:text-violet-700 cursor-pointer">
-            Twitter
+            <Link href={"/reseaux"}>Réseaux</Link>
             </div>
         </div>
         <Image src={Tiret} alt="Tiret" className="hidden lg:block" />

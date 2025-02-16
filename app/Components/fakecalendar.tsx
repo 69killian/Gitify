@@ -1,13 +1,19 @@
-"use client"
+"use client";
+
+import React, { useState, useEffect } from "react";
 
 const FakeGitHubCalendar = () => {
-  // Création de 95 jours, répartis sur plusieurs lignes de 7 jours
-  const days = Array(315).fill(false).map(() => Math.random() < 0.5); // Random pour simuler des commits
+  const [days, setDays] = useState<boolean[]>([]);
+
+  useEffect(() => {
+    // Générer les jours côté client après le rendu initial
+    const generatedDays = Array(315).fill(false).map(() => Math.random() < 0.5);
+    setDays(generatedDays);
+  }, []);
 
   return (
     <div className="bg-[#241730] transition-all overflow-hidden duration-200 w-full h-[250px] rounded-[6px] border border-1 border-[#292929] flex justify-center items-center">
       <div className="grid grid-cols-7 gap-1 rotate-90">
-        {/* Afficher les 95 jours dans un format de plusieurs lignes */}
         {days.map((hasCommit, index) => (
           <div
             key={index}
