@@ -46,7 +46,7 @@ const Sidebar = () => {
     {
       title: "⚙️ Paramètres",
       content: [
-        "👤 Mon Profil",
+        <Link key="profil" href="/profil" className="text-[#7E7F81] hover:text-white cursor-pointer transition-all duration-100 py-2">👤 Mon Profil</Link>,
         "🔄 Intégrations",
         "📢 Feedback & Support"
       ],
@@ -56,7 +56,7 @@ const Sidebar = () => {
   ];
 
   return (
-    <nav className="hidden lg:block bg-[#0E0913] w-[250px] fixed bottom-0 top-[60px] text-white p-8 transition-all border-r border-r-1 border-white/15">
+    <nav className="hidden lg:block bg-[#0E0913] z-10 w-[250px] fixed bottom-0 top-[60px] text-white p-8 transition-all border-r border-r-1 border-white/15">
       {accordionData.map((accordion, index) => {
         const isOpen = openAccordions.includes(index);
         const isSections = accordion.title === "SECTIONS";
