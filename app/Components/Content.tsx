@@ -13,8 +13,8 @@ const Content = () => {
         <div className="flex flex-col justify-between gap-4">
           {/* Left Content */}
           <div className="md:w-1/2">
-          <div className="text-[36px] mb-[20px]">
-              Bienvenue sur <span className='gradient'>Gitify</span>, UserDev 🖐️ {/*Put username here */}
+          <div className="text-[46px] mb-[20px]">
+              Bienvenue, <span className='gradient'>UserDev</span> 🖐️ {/*Put username here */}
             </div>
             <div className="text-[26px] mb-[20px]">
               Mes <span className="gradient">Contributions</span>
