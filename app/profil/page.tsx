@@ -10,7 +10,7 @@ export default async function Home() {
     
     <Header/>
     <Sidebar/>
-    <div className="lg:pl-[270px] pt-[125px] pr-[20px]">
+    <div className="lg:pl-[270px] pt-[105px] pr-[20px]">
     <Content/>
     </div>
     </>

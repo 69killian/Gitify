@@ -47,7 +47,7 @@ const Sidebar = () => {
       title: "⚙️ Paramètres",
       content: [
         <Link key="profil" href="/profil" className="text-[#7E7F81] hover:text-white cursor-pointer transition-all duration-100 py-2">👤 Mon Profil</Link>,
-        "🔄 Intégrations",
+        <Link key="profil" href="/integrations" className="text-[#7E7F81] hover:text-white cursor-pointer transition-all duration-100 py-2">🔄 Intégrations</Link>,
         "📢 Feedback & Support"
       ],
       icon: Stars,
