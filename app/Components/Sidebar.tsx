@@ -48,7 +48,7 @@ const Sidebar = () => {
       content: [
         <Link key="profil" href="/profil" className="text-[#7E7F81] hover:text-white cursor-pointer transition-all duration-100 py-2">👤 Mon Profil</Link>,
         <Link key="profil" href="/integrations" className="text-[#7E7F81] hover:text-white cursor-pointer transition-all duration-100 py-2">🔄 Intégrations</Link>,
-        "📢 Feedback & Support"
+        <Link key="profil" href="/support" className="text-[#7E7F81] hover:text-white cursor-pointer transition-all duration-100 py-2">📢 Feedback & Support</Link>
       ],
       icon: Stars,
       link: "https://gitify.framer.website/"
