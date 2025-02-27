@@ -165,7 +165,7 @@ const Sidebar = () => {
       })}
       <button className="bg-[#1B1B1B] hover:bg-[#121212] transition-all duration-200 w-[186px] h-[32px] rounded-[6px] border border-1 border-[#292929] text-[12px] relative flex justify-center items-center">
         <Image src={LeftParticles} alt="Left Particles" className="absolute left-0" />
-        <Link href="https://mighty-travel-887542.framer.app/pricing" target="_blank">
+        <Link href="https://gitify.framer.website/" target="_blank">
         Upgrade to <span className="gradient">Pro</span>
         </Link>
         <Image src={RightParticles} alt="Right Particles" className="absolute right-0" />

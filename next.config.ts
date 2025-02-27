@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    domains: ['github.githubassets.com', 'upload.wikimedia.org'],
+    domains: ['github.githubassets.com', 'upload.wikimedia.org', 'via.placeholder.com'],
   },
 };
 
