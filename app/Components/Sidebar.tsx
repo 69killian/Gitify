@@ -29,7 +29,7 @@ const Sidebar = () => {
       content: [
         <Link key="profil" href="/streak" className="text-[#7E7F81] hover:text-white cursor-pointer transition-all duration-100 py-2">🏆 Mon Streak</Link>,
         <Link key="profil" href="/contributions" className="text-[#7E7F81] hover:text-white cursor-pointer transition-all duration-100 py-2">📊 Mes Contributions</Link>,
-         "🎖️ Mes Badges"
+        <Link key="profil" href="/badges" className="text-[#7E7F81] hover:text-white cursor-pointer transition-all duration-100 py-2">🎖️ Mes Badges</Link>
         ],
       icon: Flash,
       link: "https://gitify.framer.website/"
