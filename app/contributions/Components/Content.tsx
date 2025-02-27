@@ -50,13 +50,13 @@ const StreakPage = () => {
       <div className="mt-12 gap-5 text-center items-center flex flex-col">
         <h2 className="text-2xl font-semibold">Passe à la version <span className="gradient">Pro</span></h2>
         <p className="text-gray-400">Débloque des fonctionnalités avancées et améliore ton suivi de progression.</p>
-          <button className="bg-[#1B1B1B] hover:bg-[#121212] transition-all duration-200 w-[186px] h-[32px] rounded-[6px] border border-1 border-[#292929] text-[12px] relative flex justify-center items-center">
-            <Image src={LeftParticles} alt="Left Particles" className="absolute left-0" />
-              <Link href="https://gitify.framer.website/" target="_blank">
-              Upgrade to <span className="gradient">Pro</span>
-              </Link>
-            <Image src={RightParticles} alt="Right Particles" className="absolute right-0" />
-        </button>
+          <button className="relative z-10 py-3 px-6 bg-[#1B1B1B] hover:bg-[#160E1E]  text-center transition-colors duration-300 rounded-[8px] p-1 shadow-md shadow-[#101010] border-t-2 border-gray-300/10 w-[280px] h-[52px] rounded-[6px] border border-[#292929] text-[16px] flex justify-center items-center">
+              <Image src={LeftParticles} alt="Left Particles" className="absolute left-0" />
+                <Link href="https://gitify.framer.website/" target="_blank">
+                Upgrade to <span className="gradient">Pro</span>
+                </Link>
+              <Image src={RightParticles} alt="Right Particles" className="absolute right-0" />
+          </button>
       </div>
     </section>
   );
@@ -64,7 +64,7 @@ const StreakPage = () => {
 
 const StatCard = ({ icon, title, value }: { icon: JSX.Element; title: string; value: number }) => {
   return (
-    <div className="flex items-center gap-4 p-4 bg-[#1B1B1B] rounded-lg border border-[#292929] shadow-lg">
+    <div className="relative z-10 py-3 px-6 bg-[#1B1B1B]  text-center transition-colors duration-300 rounded-[8px] p-1 shadow-md shadow-[#101010] border-t-2 border-gray-300/10 w-full h-[92px] rounded-[6px] border border-[#292929] text-[16px] flex justify-center items-center gap-4 p-4">
       <div className="text-violet-500">{icon}</div>
       <div>
         <p className="text-gray-400 text-sm">{title}</p>
