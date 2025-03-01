@@ -20,6 +20,33 @@ button:focus {
   color: transparent; /* Assurez-vous que le texte est transparent afin que le gradient soit visible */
 }
 
+.gradient-gold {
+  background-image: linear-gradient(to bottom, #ffbf00, #ffd631, #ffffffdd);
+  -webkit-background-clip: text; /* Applique le gradient au texte */
+  color: transparent; /* Rend le texte transparent pour que le gradient soit visible */
+}
+
+/* Animation de brillance */
+@keyframes shine {
+  0% {
+    background-position: -200%;
+  }
+  100% {
+    background-position: 200%;
+  }
+}
+
+.group:hover .animate-shine {
+  animation: shine 1s infinite;
+}
+
+
+
+
+
+
+
+
 
 
 @layer base {

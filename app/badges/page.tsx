@@ -1,3 +1,4 @@
+
 import Header from "../Components/Header";
 import Sidebar from "../Components/Sidebar";
 // Content from the component file "guide"
@@ -7,10 +8,9 @@ export default async function Home() {
 
   return (
     <>
-    
     <Header/>
     <Sidebar/>
-    <div className="lg:pl-[270px] pt-[105px] pr-[20px]">
+    <div className="lg:pl-[270px] pt-[105px] pr-[20px] bg-gradient-to-br from-black via-purple-900/30 to-black">
     <Content/>
     </div>
     </>

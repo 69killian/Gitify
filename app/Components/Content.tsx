@@ -77,8 +77,8 @@ const Content = () => {
 
         {/* Other Sections */}
         <div className="mt-[30px] mb-[30px] flex items-center justify-between">
-          <div className="text-[20px] md:text-[26px]" style={{ fontFamily: "Aeonik, sans-serif" }}>
-            Tous les Badges que tu as débloqué
+          <div className="text-[20px] md:text-[26px] gradient-gold" style={{ fontFamily: "poppins, sans-serif" }}>
+          ✨ Tous les Badges que tu as débloqué ✨
           </div>
           <button className="text-[12.49px] text-white cursor-pointer bg-violet-800 hover:bg-violet-600 transition-all duration-200 w-[169px] h-[42px] border border-1 border-violet-500 text-[12px] flex justify-center items-center">
           🎖️ Voir tous mes Badges &gt;
