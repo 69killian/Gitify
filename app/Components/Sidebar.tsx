@@ -38,7 +38,7 @@ const Sidebar = () => {
       title: "🎯 Défis & Compétitions",
       content: [
         "⚡ Mes Défis",
-        "🏅 Classement",
+        <Link key="profil" href="/classement" className="text-[#7E7F81] hover:text-white cursor-pointer transition-all duration-100 py-2">🏅 Classement </Link>,
         "📅 Événements",
       ],
       icon: Squares,

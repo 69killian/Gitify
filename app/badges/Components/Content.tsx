@@ -69,7 +69,7 @@ const TrophyRoom = () => {
       </div>
 
       <button className="text-[12.49px] text-white cursor-pointer bg-violet-800 hover:bg-violet-600 transition-all duration-200 w-[200px] h-[42px] border border-1 border-violet-500 text-[12px] flex justify-center items-center">
-          🎖️ Commencer un Challenge &gt;
+          🎖️ Commencer un Défi &gt;
           </button>
       
       <div className="mt-10 p-6 bg-gradient-to-r rounded-md from-black/30 via-transparent to-black/30 backdrop-blur-md bg-opacity-30">
@@ -93,7 +93,7 @@ export const BadgeButton = ({ text, children }: { text: string, children: React.
       {children}
       {text}
       {/* Effet de brillance sur le survol */}
-      <span className="absolute inset-0  opacity-20 group-hover:opacity-100 animate-shine"></span>
+      <span className="absolute inset-0 opacity-20 group-hover:opacity-100 animate-shine"></span>
     </motion.button>
   );
 };
