@@ -54,7 +54,7 @@ const TrophyRoom = () => {
       </button>
       
       <div className="mt-10 p-6 bg-gradient-to-r rounded-md from-black/30 via-transparent to-black/30 backdrop-blur-md bg-opacity-30">
-        <h2 className="text-xl font-bold gradient-gold mb-4">✨ Tous les Badges débloqués ✨</h2>
+        <h2 className="text-xl font-bold gradient-gold mb-4">✨ Classement ✨</h2>
         <Leaderboard />
       </div>
     </section>
