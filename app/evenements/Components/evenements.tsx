@@ -27,7 +27,7 @@ const FeedbackSupport = () => {
               <button className=" relative z-10 py-3 px-6 hover:bg-[#0E0913] bg-[#160E1E] text-center transition-colors duration-300 rounded-[8px] p-1 shadow-md shadow-[#101010] border-t-2 border-gray-300/10 w-[200px] h-[42px] rounded-[6px] border border-[#292929] text-[16px] flex justify-center items-center">
                 <Image src={LeftParticles} alt="Left Particles" className="absolute left-0" />
                   <Link target='_blank' href="https://x.com/KillianCodes69" className="flex items-center gap-2 text-white">
-                    <FaXTwitter size={20} />  {/* Icône GitHub */}
+                    <FaXTwitter size={20} />  {/* Icône GitHub de react-icons */}
                     <span className="gradient">Twitter</span>
                   </Link>
                 <Image src={RightParticles} alt="Right Particles" className="absolute right-0" />

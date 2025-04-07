@@ -9,6 +9,7 @@ import { Download } from 'lucide-react';
 import LeftParticles from '../../Components/images/Group 194.svg';
 import RightParticles from '../../Components/images/Group 191.svg';
 import Link from 'next/link';
+import { Mail, Github, Globe, MapPin, Calendar, Settings, Shield } from 'lucide-react';
 
 const Profile = () => {
   const profile = {
@@ -37,6 +38,41 @@ const Profile = () => {
           <div className="text-[25px] text-white text-center flex items-center relative group">DevUser <PenLine className='right-[-30px] absolute hidden group-hover:block'/></div>
           <div className='flex items-center'>
             <Paperclip height={15}/> {profile.githubId}
+          </div>
+
+          <button className="text-[13.49px] my-2 text-white cursor-pointer bg-violet-800 hover:bg-violet-600 transition-all duration-200 w-[165px] h-[42px] border border-1 border-violet-500 text-[12px] flex justify-center items-center">
+            <Image src={LeftParticles} alt="Left Particles" className="absolute left-0" />
+            <Link className='flex' href="https://mighty-travel-887542.framer.app/pricing" target="_blank">
+              <Download height={17}/> Changer de photo
+            </Link>
+            <Image src={RightParticles} alt="Right Particles" className="absolute right-0" />
+          </button>
+
+          {/* Information Card */}
+          <div className="card mb-6">
+            <h3 className="text-lg font-semibold mb-4">Informations</h3>
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 text-gray-400">
+                <Mail className="w-5 h-5" />
+                <span>{profile.email}</span>
+              </div>
+              <div className="flex items-center gap-3 text-gray-400">
+                <Github className="w-5 h-5" />
+                <span>@{profile.username}</span>
+              </div>
+              <div className="flex items-center gap-3 text-gray-400">
+                <Globe className="w-5 h-5" />
+                <span>website.com</span>
+              </div>
+              <div className="flex items-center gap-3 text-gray-400">
+                <MapPin className="w-5 h-5" />
+                <span>Paris, France</span>
+              </div>
+              <div className="flex items-center gap-3 text-gray-400">
+                <Calendar className="w-5 h-5" />
+                <span>Membre depuis Mars 2024</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -74,41 +110,118 @@ const Profile = () => {
           {/* Separator */}
           <div className="border-b border-[#3B3B3B]/30 my-[70px]"></div>
 
-          {/* Modify Profile Section */}
-          <div className='flex mb-5'>
-            <div className='text-[25px]'>Modifier mon Profil</div>
-          </div>
-
-          <div className='flex gap-2'>
-            <div className='flex flex-col gap-0'>
-              <div className=' text-[16px] text-gray-300'>Importe la photo de ton choix</div>
+          {/* Edit Profile Form */}
+          <div className="lg:col-span-2">
+            <div className="card mb-6">
+              <h3 className="text-lg  mb-4">Éditer le profil</h3>
+              <form className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1">
+                      Nom d&rsquo;utilisateur
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full bg-[#0E0913] border border-violet-900/20 rounded-lg px-4 py-2 focus:ring-2 focus:ring-violet-700 outline-none transition-all duration-200"
+                      value="UserDev"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-400 mb-1">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      className="w-full bg-[#0E0913] border border-violet-900/20 rounded-lg px-4 py-2 focus:ring-2 focus:ring-violet-700 outline-none transition-all duration-200"
+                      value="user@example.com"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-400 mb-1">
+                      Site web
+                    </label>
+                    <input
+                      type="url"
+                      className="w-full bg-[#0E0913] border border-violet-900/20 rounded-lg px-4 py-2 focus:ring-2 focus:ring-violet-700 outline-none transition-all duration-200"
+                      value="https://website.com"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-400 mb-1">
+                      Localisation
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full bg-[#0E0913] border border-violet-900/20 rounded-lg px-4 py-2 focus:ring-2 focus:ring-violet-700 outline-none transition-all duration-200"
+                      value="Paris, France"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-400 mb-1">
+                    Bio
+                  </label>
+                  <textarea
+                    className="w-full bg-[#0E0913] border border-violet-900/20 rounded-lg px-4 py-2 h-32 focus:ring-2 focus:ring-violet-700 outline-none transition-all duration-200"
+                    defaultValue="Full Stack Developer passionné par l'open source et les nouvelles technologies."
+                  />
+                </div>
+                <button type="submit" className="btn-primary">
+                  Sauvegarder les modifications
+                </button>
+              </form>
             </div>
           </div>
 
-          <button className="text-[13.49px] mt-5 text-white cursor-pointer bg-violet-800 hover:bg-violet-600 transition-all duration-200 w-[109px] h-[42px] border border-1 border-violet-500 text-[12px] flex justify-center items-center">
-            <Image src={LeftParticles} alt="Left Particles" className="absolute left-0" />
-            <Link className='flex' href="https://mighty-travel-887542.framer.app/pricing" target="_blank">
-              <Download height={17}/> Importer
-            </Link>
-            <Image src={RightParticles} alt="Right Particles" className="absolute right-0" />
-          </button>
-
-          <div className=' text-[16px] mt-8 text-gray-300'>Ajoute une adresse email</div>
-
-          <div>
-            <input
-              type="email"
-              value={profile.email}
-              className="mt-5 mb-10 w-full sm:w-[509px] py-2 h-[40px] pl-4 pr-4 bg-[#0E0913] text-white text-sm rounded-md border border-[#1d1d1d] placeholder:text-neutral-500 focus:ring-2 focus:ring-violet-700 outline-none transition-all duration-200"
-            />
+          {/* Preferences & Security */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="card">
+              <div className="flex items-center gap-3 mb-4">
+                <Settings className="w-6 h-6 text-violet-500" />
+                <h3 className="text-lg font-semibold">Préférences</h3>
+              </div>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400">Notifications email</span>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" className="sr-only peer" checked />
+                    <div className="w-11 h-6 bg-violet-900/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-violet-500"></div>
+                  </label>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400">Profil public</span>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" className="sr-only peer" checked />
+                    <div className="w-11 h-6 bg-violet-900/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-violet-500"></div>
+                  </label>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400">Mode sombre</span>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" className="sr-only peer" checked />
+                    <div className="w-11 h-6 bg-violet-900/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-violet-500"></div>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div className="card">
+              <div className="flex items-center gap-3 mb-4">
+                <Shield className="w-6 h-6 text-violet-500" />
+                <h3 className="text-lg font-semibold">Sécurité</h3>
+              </div>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400">Authentification à deux facteurs</span>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" className="sr-only peer" checked />
+                    <div className="w-11 h-6 bg-violet-900/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-violet-500"></div>
+                  </label>
+                </div>
+              </div>
+            </div>
           </div>
-
-          {/* Separator HIDDEN */}
-          <div className="border-b border-[#3B3B3B]/30 my-[70px] hidden"></div>
-
         </div>
       </div>
-
     </section>
   );
 };

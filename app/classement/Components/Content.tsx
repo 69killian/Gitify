@@ -1,6 +1,6 @@
 "use client";
 import Breadcrumb from "../../Components/breadcrumb";
-import Leaderboard from "./Leaderboard";
+import { Trophy, Medal, Award } from "lucide-react";
 import Image from "next/image";
 import profile from "../../Components/images/profile-test.jpg";
 
@@ -53,9 +53,138 @@ const TrophyRoom = () => {
         🎖️ Commencer un Défi &gt;
       </button>
       
-      <div className="mt-10 p-6 bg-gradient-to-r rounded-md from-black/30 via-transparent to-black/30 backdrop-blur-md bg-opacity-30">
-        <h2 className="text-xl font-bold gradient-gold mb-4">✨ Classement ✨</h2>
-        <Leaderboard />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 mt-10">
+      <div className="card relative z-10 py-3 px-6 bg-[#241730] rounded-sm border border-[#292929] transition-colors duration-300 shadow-md w-full h-[92px] rounded-[6px] flex items-center gap-4 p-4">
+        <div className="flex items-center gap-4">
+          <Trophy className="w-8 h-8 text-violet-500" />
+          <div>
+            <div className="text-2xl font-bold gradient">#42</div>
+            <div className="text-sm text-gray-400">Votre rang</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="card relative z-10 py-3 px-6 bg-[#241730] rounded-sm border border-[#292929] transition-colors duration-300 shadow-md w-full h-[92px] rounded-[6px] flex items-center gap-4 p-4">
+        <div className="flex items-center gap-4">
+          <Medal className="w-8 h-8 text-violet-500" />
+          <div>
+            <div className="text-2xl font-bold gradient">4.805</div>
+            <div className="text-sm text-gray-400">Points</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="card relative z-10 py-3 px-6 bg-[#241730] rounded-sm border border-[#292929] transition-colors duration-300 shadow-md w-full h-[92px] rounded-[6px] flex items-center gap-4 p-4">
+        <div className="flex items-center gap-4">
+          <Award className="w-8 h-8 text-violet-500" />
+          <div>
+            <div className="text-2xl font-bold gradient">26</div>
+            <div className="text-sm text-gray-400">Badges</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 bg-[#241730] rounded-sm border border-[#292929] p-8">
+          <div className="card ">
+            <h2 className="text-xl font-semibold mb-6">Top Contributeurs</h2>
+            <div className="space-y-4 ">
+              {[
+                { rank: 1, name: "Sarah Chen", points: 12500, streak: 365, avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80" },
+                { rank: 2, name: "John Doe", points: 11200, streak: 280, avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e" },
+                { rank: 3, name: "Marie Durant", points: 10800, streak: 245, avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330" },
+                { rank: 4, name: "Alex Smith", points: 9500, streak: 210, avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d" },
+                { rank: 5, name: "Lisa Wang", points: 9200, streak: 195, avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb" }
+              ].map((user) => (
+                <div key={user.rank} className="flex items-center gap-4">
+                  <div className={`w-8 h-8 flex items-center justify-center rounded-full ${
+                    user.rank === 1 
+                      ? 'bg-yellow-500' 
+                      : user.rank === 2
+                      ? 'bg-gray-400'
+                      : user.rank === 3
+                      ? 'bg-amber-600'
+                      : 'bg-violet-500/20'
+                  }`}>
+                    {user.rank}
+                  </div>
+                  <img 
+                    src={user.avatar} 
+                    alt={user.name} 
+                    className="w-10 h-10 rounded-full"
+                  />
+                  <div className="flex-1">
+                    <div className="font-medium">{user.name}</div>
+                    <div className="text-sm text-gray-400">{user.points} points</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-violet-400">{user.streak} jours</div>
+                    <div className="text-sm text-gray-400">de streak</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div className="card lg:col-span-2 bg-[#241730] rounded-sm border border-[#292929] p-8">
+            <h2 className="text-xl font-semibold mb-6">Statistiques</h2>
+            <div className="space-y-6">
+              <div>
+                <div className="text-sm text-gray-400 mb-2">Distribution des streaks</div>
+                <div className="space-y-2">
+                  {[
+                    { range: "1-7 jours", count: 45 },
+                    { range: "8-30 jours", count: 30 },
+                    { range: "31-90 jours", count: 15 },
+                    { range: "91+ jours", count: 10 }
+                  ].map((stat) => (
+                    <div key={stat.range}>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span>{stat.range}</span>
+                        <span>{stat.count}%</span>
+                      </div>
+                      <div className="h-2 bg-violet-900/20 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-violet-500 rounded-full"
+                          style={{ width: `${stat.count}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <div className="text-sm text-gray-400 mb-2">Top langages</div>
+                <div className="space-y-2">
+                  {[
+                    { name: "JavaScript", percentage: 35 },
+                    { name: "Python", percentage: 25 },
+                    { name: "Java", percentage: 20 },
+                    { name: "TypeScript", percentage: 15 }
+                  ].map((language) => (
+                    <div key={language.name}>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span>{language.name}</span>
+                        <span>{language.percentage}%</span>
+                      </div>
+                      <div className="h-2 bg-violet-900/20 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-violet-500 rounded-full"
+                          style={{ width: `${language.percentage}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );

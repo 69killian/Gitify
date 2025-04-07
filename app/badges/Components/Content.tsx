@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Trophy, Star, Award } from "lucide-react";
 import Breadcrumb from "../../Components/breadcrumb";
 import Tables from "../../Components/Tables";
 
@@ -68,11 +68,69 @@ const TrophyRoom = () => {
         </button>
       </div>
 
-      <button className="text-[12.49px] text-white cursor-pointer bg-violet-800 hover:bg-violet-600 transition-all duration-200 w-[200px] h-[42px] border border-1 border-violet-500 text-[12px] flex justify-center items-center">
+      <button className="text-[12.49px] mb-10 text-white cursor-pointer bg-violet-800 hover:bg-violet-600 transition-all duration-200 w-[200px] h-[42px] border border-1 border-violet-500 text-[12px] flex justify-center items-center">
           🎖️ Commencer un Défi &gt;
-          </button>
+      </button>
+
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      {/* Carte Badges débloqués */}
+      <div className="relative z-10 py-3 px-6 bg-[#241730] rounded-sm border border-[#292929] transition-colors duration-300 shadow-md w-full h-[92px] rounded-[6px] flex items-center gap-4 p-4">
+        <Trophy className="w-8 h-8 text-violet-500" />
+        <div>
+          <div className="text-2xl font-bold gradient">26</div>
+          <div className="text-sm text-gray-400">Badges débloqués</div>
+        </div>
+      </div>
+
+      {/* Carte Badges rares */}
+      <div className="relative z-10 py-3 px-6 bg-[#241730] rounded-sm border border-[#292929] transition-colors duration-300 shadow-md w-full h-[92px] rounded-[6px] flex items-center gap-4 p-4">
+        <Star className="w-8 h-8 text-violet-500" />
+        <div>
+          <div className="text-2xl font-bold gradient">12</div>
+          <div className="text-sm text-gray-400">Badges rares</div>
+        </div>
+      </div>
+
+      {/* Carte Progression */}
+      <div className="relative z-10 py-3 px-6 bg-[#241730] rounded-sm border border-[#292929] transition-colors duration-300 shadow-md w-full h-[92px] rounded-[6px] flex items-center gap-4 p-4">
+        <Award className="w-8 h-8 text-violet-500" />
+        <div>
+          <div className="text-2xl font-bold gradient">85%</div>
+          <div className="text-sm text-gray-400">Progression totale</div>
+        </div>
+      </div>
+    </div>
+
+    {/* Section Badges en cours */}
+    <div className="relative z-10 bg-[#241730] rounded-sm border border-[#292929] py-3 px-6 transition-colors duration-300 shadow-md border-t-2 w-full rounded-[6px] text-[16px] flex flex-col justify-start items-start gap-4 p-4 mb-8">
+      <h2 className="text-xl font-semibold">Badges en cours</h2>
+      <div className="space-y-6 w-full">
+        {[
+          { name: 'Streak Master', progress: 75, current: 23, target: 30 },
+          { name: 'Code Legend', progress: 45, current: 450, target: 1000 },
+          { name: 'PR Hero', progress: 60, current: 6, target: 10 },
+        ].map((badge) => (
+          <div key={badge.name} className="space-y-2">
+            <div className="flex justify-between">
+              <span className="font-medium">{badge.name}</span>
+              <span className="text-gray-400">
+                {badge.current}/{badge.target}
+              </span>
+            </div>
+            <div className="h-2 bg-violet-900/20 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-violet-500 rounded-full"
+                style={{ width: `${badge.progress}%` }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
       
-      <div className="mt-10 p-6 bg-gradient-to-r rounded-md from-black/30 via-transparent to-black/30 backdrop-blur-md bg-opacity-30">
+      <div className="mt-10 p-6  rounded-md from-black/30 via-transparent to-black/30 backdrop-blur-md bg-opacity-30">
         <h2 className="text-xl font-bold gradient-gold mb-4">
           ✨ Tous les Badges débloqués ✨
         </h2>
