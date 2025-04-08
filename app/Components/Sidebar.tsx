@@ -12,6 +12,7 @@ import Link from "next/link";
 import LeftParticles from './images/Group 194.svg';
 import RightParticles from './images/Group 191.svg';
 
+
 const Sidebar = () => {
   const [openAccordions, setOpenAccordions] = useState<number[]>([]);
 

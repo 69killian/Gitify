@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Providers } from "./providers";
 
 // Charger les polices Geist et Geist Mono
 const geistSans = Geist({
@@ -18,11 +19,12 @@ export const metadata: Metadata = {
   description: "Git gamification for noobs",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
     <html lang="en">
       <head>
@@ -46,7 +48,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         style={{ fontFamily: "Poppins, Aeonik, Inter, sans-serif" }}
       >
+        <Providers>
         {children}
+        </Providers>
       </body>
     </html>
   );

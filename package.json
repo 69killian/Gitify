@@ -9,12 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@auth/prisma-adapter": "^2.8.0",
     "@prisma/client": "^6.5.0",
     "@react-three/drei": "^10.0.0",
     "@react-three/fiber": "^9.0.4",
     "framer-motion": "^12.4.7",
     "lucide-react": "^0.475.0",
     "next": "^15.2.4",
+    "next-auth": "^4.24.11",
     "prisma": "^6.5.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
