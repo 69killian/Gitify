@@ -67,15 +67,19 @@ const Profile = () => {
               </div>
               <div className="flex items-center gap-3 text-gray-400">
                 <Globe className="w-5 h-5" />
-                <span>website.com</span>
-              </div>
-              <div className="flex items-center gap-3 text-gray-400">
-                <MapPin className="w-5 h-5" />
-                <span>Paris, France</span>
+                <span>{session?.user?.website}</span>
               </div>
               <div className="flex items-center gap-3 text-gray-400">
                 <Calendar className="w-5 h-5" />
-                <span>Membre depuis Mars 2024</span>
+                <span> Date de création :&nbsp;
+                {session?.user?.created_at 
+                  ? new Date(session.user.created_at).toLocaleDateString('fr-FR', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })
+                  : ''}
+              </span>
               </div>
             </div>
           </div>
@@ -161,15 +165,15 @@ const Profile = () => {
                     value={session?.user?.bio}
                   />
                 </div>
-                <button type="submit" className="btn-primary">
+                <button type="submit" className="text-[13.49px] my-2 text-white cursor-pointer bg-violet-800 hover:bg-violet-600 transition-all duration-200 w-[250px] h-[42px] border border-1 border-violet-500 text-[12px] flex justify-center items-center">
                   Sauvegarder les modifications
                 </button>
               </form>
             </div>
           </div>
 
-          {/* Preferences & Security */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Preferences & Security HIDDEN */}
+          <div className="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="card">
               <div className="flex items-center gap-3 mb-4">
                 <Settings className="w-6 h-6 text-violet-500" />
