@@ -10,6 +10,7 @@ import LeftParticles from '../../Components/images/Group 194.svg';
 import RightParticles from '../../Components/images/Group 191.svg';
 import Link from 'next/link';
 import { Mail, Github, Globe, MapPin, Calendar, Settings, Shield } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 
 const Profile = () => {
   const profile = {
@@ -18,6 +19,9 @@ const Profile = () => {
     avatarUrl: "https://via.placeholder.com/150",
     email: "devuser@example.com",
   };
+  const { data: session } = useSession();
+
+  console.log(session);
 
   return (
     <section className="px-4 md:px-8">
@@ -35,9 +39,9 @@ const Profile = () => {
               className="object-cover rounded-full"
             />
           </button>
-          <div className="text-[25px] text-white text-center flex items-center relative group">DevUser <PenLine className='right-[-30px] absolute hidden group-hover:block'/></div>
+          <div className="text-[25px] text-white text-center flex items-center relative group">{session?.user?.name}<PenLine className='right-[-30px] absolute hidden group-hover:block'/></div>
           <div className='flex items-center'>
-            <Paperclip height={15}/> {profile.githubId}
+            <Paperclip height={15}/> {session?.user?.id}
           </div>
 
           <button className="text-[13.49px] my-2 text-white cursor-pointer bg-violet-800 hover:bg-violet-600 transition-all duration-200 w-[165px] h-[42px] border border-1 border-violet-500 text-[12px] flex justify-center items-center">
@@ -54,11 +58,11 @@ const Profile = () => {
             <div className="space-y-4">
               <div className="flex items-center gap-3 text-gray-400">
                 <Mail className="w-5 h-5" />
-                <span>{profile.email}</span>
+                <span>{session?.user?.email}</span>
               </div>
               <div className="flex items-center gap-3 text-gray-400">
                 <Github className="w-5 h-5" />
-                <span>@{profile.username}</span>
+                <span>@{session?.user?.name}</span>
               </div>
               <div className="flex items-center gap-3 text-gray-400">
                 <Globe className="w-5 h-5" />
@@ -123,7 +127,7 @@ const Profile = () => {
                     <input
                       type="text"
                       className="w-full bg-[#0E0913] border border-violet-900/20 rounded-lg px-4 py-2 focus:ring-2 focus:ring-violet-700 outline-none transition-all duration-200"
-                      value="UserDev"
+                      value={session?.user?.name}
                     />
                   </div>
                   <div>
@@ -133,7 +137,7 @@ const Profile = () => {
                     <input
                       type="email"
                       className="w-full bg-[#0E0913] border border-violet-900/20 rounded-lg px-4 py-2 focus:ring-2 focus:ring-violet-700 outline-none transition-all duration-200"
-                      value="user@example.com"
+                      value={session?.user?.email}
                     />
                   </div>
                   <div>
@@ -144,16 +148,6 @@ const Profile = () => {
                       type="url"
                       className="w-full bg-[#0E0913] border border-violet-900/20 rounded-lg px-4 py-2 focus:ring-2 focus:ring-violet-700 outline-none transition-all duration-200"
                       value="https://website.com"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-1">
-                      Localisation
-                    </label>
-                    <input
-                      type="text"
-                      className="w-full bg-[#0E0913] border border-violet-900/20 rounded-lg px-4 py-2 focus:ring-2 focus:ring-violet-700 outline-none transition-all duration-200"
-                      value="Paris, France"
                     />
                   </div>
                 </div>

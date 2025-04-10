@@ -1,7 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -18,15 +14,14 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -40,60 +35,59 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  username      String    @unique
-  avatar_url    String?
-  github_id     String?   @unique
-  created_at    DateTime  @default(now())
-  updated_at    DateTime  @updatedAt
-  streaks       Streak[]
-  userBadges    UserBadge[]
-  contributions Contribution[]
+  id             String          @id @default(cuid())
+  name           String?
+  email          String?         @unique
+  emailVerified  DateTime?
+  image          String?
+  username       String          @unique
+  avatar_url     String?
+  github_id      String?         @unique
+  created_at     DateTime        @default(now())
+  updated_at     DateTime        @updatedAt
+  accounts       Account[]
+  contributions  Contribution[]
+  feedbacks      Feedback[]
+  integrations   Integration[]
+  sessions       Session[]
+  streaks        Streak[]
+  userBadges     UserBadge[]
   userChallenges UserChallenge[]
-  feedbacks     Feedback[]
-  integrations  Integration[]
 }
 
 model Streak {
-  id            Int      @id @default(autoincrement())
-  user_id       String
-  start_date    DateTime
-  end_date      DateTime?
-  current_streak Int     @default(1)
-  longest_streak Int     @default(1)
-  is_active     Boolean  @default(true)
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  user          User     @relation(fields: [user_id], references: [id])
+  id             Int       @id @default(autoincrement())
+  user_id        String
+  start_date     DateTime
+  end_date       DateTime?
+  current_streak Int       @default(1)
+  longest_streak Int       @default(1)
+  is_active      Boolean   @default(true)
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+  user           User      @relation(fields: [user_id], references: [id])
 }
 
 model Badge {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String?
-  icon        String?
-  category    String?
-  condition   String
-  created_at  DateTime @default(now())
-
-  // Relations
-  userBadges     UserBadge[]
+  id               Int         @id @default(autoincrement())
+  name             String
+  description      String?
+  icon             String?
+  category         String?
+  condition        String
+  created_at       DateTime    @default(now())
   challengeRewards Challenge[] @relation("ChallengeReward")
+  userBadges       UserBadge[]
 }
 
 model UserBadge {
-  id         Int      @id @default(autoincrement())
-  user_id    String
-  badge_id   Int
+  id          Int      @id @default(autoincrement())
+  user_id     String
+  badge_id    Int
   unlocked_at DateTime @default(now())
-  user       User     @relation(fields: [user_id], references: [id])
-  badge      Badge    @relation(fields: [badge_id], references: [id])
+  badge       Badge    @relation(fields: [badge_id], references: [id])
+  user        User     @relation(fields: [user_id], references: [id])
+
   @@unique([user_id, badge_id])
 }
 
@@ -109,30 +103,28 @@ model Contribution {
 }
 
 model Challenge {
-  id            Int      @id @default(autoincrement())
-  name          String
-  description   String?
-  difficulty    String?
-  duration      Int?
+  id              Int             @id @default(autoincrement())
+  name            String
+  description     String?
+  difficulty      String?
+  duration        Int?
   reward_badge_id Int?
-  created_at    DateTime @default(now())
-
-  // Relations
-  rewardBadge Badge? @relation("ChallengeReward", fields: [reward_badge_id], references: [id])
-  userChallenges UserChallenge[]
+  created_at      DateTime        @default(now())
+  rewardBadge     Badge?          @relation("ChallengeReward", fields: [reward_badge_id], references: [id])
+  userChallenges  UserChallenge[]
 }
 
 model UserChallenge {
-  id         Int      @id @default(autoincrement())
-  user_id    String
+  id           Int       @id @default(autoincrement())
+  user_id      String
   challenge_id Int
-  start_date DateTime @default(now())
-  end_date   DateTime?
-  progress   Int      @default(0)
-  status     String   @default("in_progress")
-  created_at DateTime @default(now())
-  user       User     @relation(fields: [user_id], references: [id])
-  challenge  Challenge @relation(fields: [challenge_id], references: [id])
+  start_date   DateTime  @default(now())
+  end_date     DateTime?
+  progress     Int       @default(0)
+  status       String    @default("in_progress")
+  created_at   DateTime  @default(now())
+  challenge    Challenge @relation(fields: [challenge_id], references: [id])
+  user         User      @relation(fields: [user_id], references: [id])
 }
 
 model Feedback {
@@ -149,16 +141,17 @@ model Feedback {
 }
 
 model Integration {
-  id              Int      @id @default(autoincrement())
-  user_id         String
-  service         String
-  status          String   @default("disconnected")
-  permissions     String[]
-  access_token    String?
-  refresh_token   String?
+  id               Int       @id @default(autoincrement())
+  user_id          String
+  service          String
+  status           String    @default("disconnected")
+  permissions      String[]
+  access_token     String?
+  refresh_token    String?
   token_expires_at DateTime?
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
-  user            User     @relation(fields: [user_id], references: [id])
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
+  user             User      @relation(fields: [user_id], references: [id])
+
   @@unique([user_id, service])
 }

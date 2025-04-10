@@ -3,8 +3,9 @@ import React from 'react';
 import FakeGitHubCalendar from './fakecalendar';
 import Breadcrumb from './breadcrumb';
 import Tables from './Tables';
-
+import { useSession } from 'next-auth/react';
 const Content = () => {
+  const { data: session } = useSession();
   return (
     <>
       <section className="px-4 md:px-8">
@@ -14,7 +15,7 @@ const Content = () => {
           {/* Left Content */}
           <div className="md:w-1/2">
           <div className="text-[46px] mb-[20px]">
-              Bienvenue, <span className='gradient'>UserDev</span> 🖐️ {/*Put username here */}
+              Bienvenue, <span className='gradient'>{session?.user?.name}</span> 🖐️ {/*Put username here */}
             </div>
             <div className="text-[26px] mb-[20px]">
               Mes <span className="gradient">Contributions</span>
