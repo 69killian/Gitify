@@ -22,16 +22,21 @@ export const authOptions: NextAuthOptions = {
             where: { email: user.email! }
           });
 
+          const userData = {
+            github_id: account.providerAccountId,
+            username: profile?.login || user.name || 'user',
+            avatar_url: user.image,
+            bio: profile?.bio || '',
+            website: profile?.blog || '',
+            updated_at: new Date(),
+          };
+
           if (existingUser) {
             await prisma.user.update({
               where: { id: existingUser.id },
-              data: { 
-                github_id: account.providerAccountId,
-                updated_at: new Date()
-              }
+              data: userData
             });
 
-            // Vérifier si le compte est bien lié
             const existingAccount = await prisma.account.findFirst({
               where: {
                 userId: existingUser.id,
@@ -56,12 +61,9 @@ export const authOptions: NextAuthOptions = {
           } else {
             const newUser = await prisma.user.create({
               data: {
+                ...userData,
                 email: user.email!,
-                username: profile?.login || user.name || 'user',
-                avatar_url: user.image,
-                github_id: account.providerAccountId,
                 created_at: new Date(),
-                updated_at: new Date(),
               }
             });
 
@@ -89,17 +91,58 @@ export const authOptions: NextAuthOptions = {
       return true;
     },
 
-    async jwt({ token, user, account }) {
+    async jwt({ token, user }) {
       if (user) {
-        token.sub = user.id;
+        const userInDb = await prisma.user.findUnique({
+          where: { email: user.email! },
+          select: {
+            id: true,
+            github_id: true,
+            username: true,
+            bio: true,
+            website: true,
+            created_at: true,
+          },
+        });
+    
+        if (userInDb) {
+          token.sub = userInDb.id;
+          token.github_id = userInDb.github_id;
+          token.username = userInDb.username;
+          token.bio = userInDb.bio;
+          token.website = userInDb.website;
+          token.created_at = userInDb.created_at;
+        }
       }
+    
       return token;
-    },
+    }
+    ,
 
     async session({ session, token }) {
       if (session.user && token.sub) {
         session.user.id = token.sub;
+
+        const userInDb = await prisma.user.findUnique({
+          where: { id: token.sub },
+          select: {
+            github_id: true,
+            username: true,
+            bio: true,
+            website: true,
+            created_at: true,
+          }
+        });
+
+        if (userInDb) {
+          session.user.github_id = userInDb.github_id ?? null;
+          session.user.username = userInDb.username ?? null;
+          session.user.bio = userInDb.bio ?? null;
+          session.user.website = userInDb.website ?? null;
+          session.user.created_at = userInDb.created_at ?? null;
+        }
       }
+
       return session;
     },
 

@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { Mail, Github, Globe, MapPin, Calendar, Settings, Shield } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 
+
 const Profile = () => {
   const profile = {
     githubId: "abc123herghedf2695982gberg",
@@ -21,7 +22,7 @@ const Profile = () => {
   };
   const { data: session } = useSession();
 
-  console.log(session);
+
 
   return (
     <section className="px-4 md:px-8">
@@ -32,8 +33,8 @@ const Profile = () => {
         {/* Profile Section */}
         <div className="flex flex-col items-center justify-center gap-4">
           <button className="z-1 bg-[#160E1E] h-[200px] w-[200px] rounded-full border-2 border-violet-700 overflow-hidden relative flex items-center justify-center">
-            <Image 
-              src={profil} 
+            <img
+              src={session?.user?.image} 
               alt="Profile" 
               layout="fill" 
               className="object-cover rounded-full"
@@ -41,7 +42,7 @@ const Profile = () => {
           </button>
           <div className="text-[25px] text-white text-center flex items-center relative group">{session?.user?.name}<PenLine className='right-[-30px] absolute hidden group-hover:block'/></div>
           <div className='flex items-center'>
-            <Paperclip height={15}/> {session?.user?.id}
+            <Paperclip height={15}/> {session?.user?.github_id}
           </div>
 
           <button className="text-[13.49px] my-2 text-white cursor-pointer bg-violet-800 hover:bg-violet-600 transition-all duration-200 w-[165px] h-[42px] border border-1 border-violet-500 text-[12px] flex justify-center items-center">
@@ -117,7 +118,7 @@ const Profile = () => {
           {/* Edit Profile Form */}
           <div className="lg:col-span-2">
             <div className="card mb-6">
-              <h3 className="text-lg  mb-4">Éditer le profil</h3>
+              <h3 className="text-lg  mb-4">Visualisez votre profil GitHub</h3>
               <form className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
@@ -147,7 +148,7 @@ const Profile = () => {
                     <input
                       type="url"
                       className="w-full bg-[#0E0913] border border-violet-900/20 rounded-lg px-4 py-2 focus:ring-2 focus:ring-violet-700 outline-none transition-all duration-200"
-                      value="https://website.com"
+                      value={session?.user?.website}
                     />
                   </div>
                 </div>
@@ -157,7 +158,7 @@ const Profile = () => {
                   </label>
                   <textarea
                     className="w-full bg-[#0E0913] border border-violet-900/20 rounded-lg px-4 py-2 h-32 focus:ring-2 focus:ring-violet-700 outline-none transition-all duration-200"
-                    defaultValue="Full Stack Developer passionné par l'open source et les nouvelles technologies."
+                    value={session?.user?.bio}
                   />
                 </div>
                 <button type="submit" className="btn-primary">
