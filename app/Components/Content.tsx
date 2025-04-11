@@ -1,6 +1,6 @@
 "use client"
 import React from 'react';
-import FakeGitHubCalendar from './fakecalendar';
+import GitHubCalendar from './githubCalendar';
 import Breadcrumb from './breadcrumb';
 import Tables from './Tables';
 import { useSession } from 'next-auth/react';
@@ -25,7 +25,7 @@ const Content = () => {
             </div>
             
           </div>
-          <FakeGitHubCalendar />
+          <GitHubCalendar />
         </div>
 
         {/* Divider */}

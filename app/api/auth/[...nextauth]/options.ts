@@ -10,8 +10,13 @@ if (!process.env.GITHUB_ID || !process.env.GITHUB_SECRET) {
 export const authOptions: NextAuthOptions = {
   providers: [
     GithubProvider({
-      clientId: process.env.GITHUB_ID,
-      clientSecret: process.env.GITHUB_SECRET,
+      clientId: process.env.GITHUB_ID as string,
+      clientSecret: process.env.GITHUB_SECRET as string,
+      authorization: {
+        params: {
+          scope: 'read:user user:email repo'
+        }
+      }
     }),
   ],
   callbacks: {
@@ -91,7 +96,7 @@ export const authOptions: NextAuthOptions = {
       return true;
     },
 
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
         const userInDb = await prisma.user.findUnique({
           where: { email: user.email! },
@@ -115,9 +120,12 @@ export const authOptions: NextAuthOptions = {
         }
       }
     
+      if (account) {
+        token.accessToken = account.access_token;
+      }
+    
       return token;
-    }
-    ,
+    },
 
     async session({ session, token }) {
       if (session.user && token.sub) {
@@ -142,6 +150,8 @@ export const authOptions: NextAuthOptions = {
           session.user.created_at = userInDb.created_at ?? null;
         }
       }
+
+      session.accessToken = token.accessToken;
 
       return session;
     },

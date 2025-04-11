@@ -1,7 +1,9 @@
 import { Profile, Account } from "next-auth/providers";
+import { DefaultSession } from "next-auth";
 
 declare module "next-auth" {
   interface Session {
+    accessToken?: string;
     user: {
       id: string;
       name?: string | null;
@@ -12,7 +14,7 @@ declare module "next-auth" {
       bio?: string | null;
       website?: string | null;
       created_at?: Date;
-    };
+    } & DefaultSession["user"];
   }
 
   interface Profile {

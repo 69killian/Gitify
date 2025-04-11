@@ -1,0 +1,345 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Brief du Projet: OpenSource Together
+
+## Description Générale
+# Gitify – La gamification de votre parcours open source
+
+Gitify est une application SaaS open source conçue pour transformer votre activité GitHub en une expérience ludique et motivante. Son objectif principal est de gamifier votre processus de contribution open source à travers un système de challenges, de badges, de progression et de visualisation de votre impact. 
+
+---
+
+## Authentification GitHub via OAuth
+
+Gitify utilise le protocole OAuth pour lier votre compte GitHub à l'application. 
+
+- La connexion se fait directement via GitHub.
+- Dès la première connexion, votre compte est automatiquement synchronisé avec Gitify.
+- L’application récupère vos données publiques (profil, contributions, repositories, etc.).
+- Aucune étape de configuration n’est nécessaire.
+
+---
+
+## Tableau de bord utilisateur
+
+Une fois connecté, l’utilisateur accède à un tableau de bord personnalisé affichant une vue d’ensemble de son activité GitHub et de sa progression sur Gitify.
+
+### Calendrier de contributions
+
+Un calendrier interactif similaire à celui de GitHub permet de visualiser :
+
+- Vos contributions quotidiennes (commits, pull requests, issues, etc.)
+- Le nombre de jours consécutifs de contributions (streak actuel)
+- Le record personnel de streak
+
+### Vue d’ensemble
+
+Cette section affiche :
+
+- Le nombre total de badges remportés
+- Le nombre de défis terminés
+- Le nombre de jours en streak
+- Le record de streak
+- Les derniers badges gagnés
+
+---
+
+## Système de badges
+
+Gitify propose un système de récompense via des badges attribués selon vos actions sur GitHub et vos progrès dans l'application.
+
+### Types de badges
+
+- **Streak badges** : pour les séries de jours consécutifs avec contributions
+- **Contribution badges** : selon le volume de contributions
+- **Pull request badges** : selon le nombre et l'impact des pull requests
+- **Open source badges** : pour les contributions à des projets publics
+- **Challenge badges** : pour les défis spécifiques à Gitify
+- **Badges secrets** : uniquement accessibles après avoir complété toutes les autres catégories
+
+---
+
+## Salle des badges
+
+Une section dédiée à la consultation des badges :
+
+- Affiche tous les badges existants, débloqués ou non
+- Chaque badge est accompagné d’une jauge de complétion
+- Possibilité de filtrer ou classer les badges par catégorie ou progression
+
+---
+
+## Objectifs à venir
+
+Gitify propose également un système d’objectifs affichés sous forme de barres de progression. Cette section indique :
+
+- Les badges en cours de progression
+- Le nombre de jours restants à atteindre pour certains objectifs
+- Une visualisation claire de ce qui vous sépare du prochain badge
+
+---
+
+## Historique des streaks
+
+Chaque utilisateur peut consulter son historique de streaks :
+
+- Liste de toutes les périodes de streak enregistrées
+- Nombre de jours pour chaque streak
+- Statut : "en cours" ou "terminé"
+
+---
+
+## Mes contributions
+
+Cette page permet de visualiser l’ensemble de vos contributions GitHub :
+
+- Liste des dernières contributions (issues, commits, pull requests…)
+- Affichage de vos repositories publics
+- Informations supplémentaires sur les dépôts (nombre d’étoiles, forks, activité récente)
+
+---
+
+## Mes défis
+
+Dans cette section, les défis Gitify sont présentés :
+
+- Liste de défis disponibles (certains peuvent être bloqués jusqu’à obtention de certains badges)
+- Détail des conditions pour chaque défi
+- Bouton pour commencer un défi
+- Une fois démarré, le défi est suivi dans le tableau de bord avec sa progression
+
+---
+
+## Classement (Leaderboard)
+
+Un classement permet de se situer par rapport aux autres utilisateurs :
+
+- Basé principalement sur les streaks GitHub
+- Affiche les meilleurs utilisateurs de la plateforme
+- Mise à jour régulière selon les performances
+
+---
+
+## Intégration GitHub
+
+Une section permet de gérer les autorisations GitHub :
+
+- Possibilité de révoquer l’accès GitHub
+- Attention : la révocation entraîne la suppression du compte Gitify associé
+
+---
+
+## Feedback et support
+
+Gitify encourage la contribution et l’amélioration continue via un système de feedback intégré :
+
+- Formulaire de contact permettant de soumettre :
+  - Des suggestions
+  - Des bugs
+  - Des questions
+- Possibilité d’ajouter des captures d’écran ou images
+- Suivi de l’état du ticket :
+  - "En cours"
+  - "Répondu"
+  - "Résolu"
+
+---
+
+## Pourquoi utiliser Gitify ?
+
+- Pour transformer vos contributions open source en expérience de jeu
+- Pour vous motiver à contribuer chaque jour grâce à un système de streaks
+- Pour visualiser vos progrès et vous fixer des objectifs concrets
+- Pour centraliser vos données GitHub dans une interface claire et dynamique
+- Pour gagner en visibilité et construire votre réputation de développeur actif
+
+---
+
+Gitify est une passerelle entre le sérieux du développement et la motivation des mécaniques de jeu. En contribuant chaque jour, vous construisez non seulement votre code, mais aussi votre légende.
+
+
+# Stack Technique – Gitify
+
+Gitify s’appuie sur un ensemble d’outils modernes et performants pour offrir une application robuste, maintenable et agréable à utiliser, tant pour les utilisateurs que pour les développeurs.
+
+---
+
+## Frontend
+
+### **Framer (No-code)**
+- Utilisé pour créer la **landing page** de Gitify.
+- Permet un design rapide, interactif et responsive, sans écrire une ligne de code.
+- Idéal pour tester des idées et itérer sur l’interface publique sans toucher au code principal.
+
+### **Next.js**
+- Framework React moderne, utilisé pour construire toute l’**application web**.
+- Prise en charge du rendu hybride (SSR, SSG, ISR).
+- Optimisation des performances intégrée (routing, image, etc.).
+- Compatible avec l'API de GitHub pour la récupération des données.
+
+### **TypeScript**
+- Utilisé pour ajouter de la **sécurité de typage** au code JavaScript.
+- Permet une meilleure lisibilité, détection des erreurs en amont et scalabilité.
+
+---
+
+## Backend & Base de données
+
+### **Prisma ORM**
+- Outil de mapping objet-relationnel pour interagir avec la base de données.
+- Permet de modéliser les entités comme les utilisateurs, les streaks, les badges, etc.
+- Génère automatiquement des types TypeScript fiables et des requêtes SQL optimisées.
+
+### **PostgreSQL (via Supabase)**
+- Base de données relationnelle robuste.
+- Supabase sert d’interface de gestion (hébergement, monitoring, sécurité).
+- Supporte les relations complexes, idéal pour le système de badges, de streaks, et d'historique.
+
+---
+
+## Authentification
+
+### **NextAuth.js (OAuth GitHub)**
+- Système d'authentification complet basé sur OAuth.
+- Permet la connexion et la synchronisation directe avec GitHub.
+- Prise en charge de la persistance des sessions et des sécurités standards.
+- Intégration transparente avec Prisma pour la gestion des utilisateurs.
+
+---
+
+## Déploiement
+
+### **Vercel**
+- Plateforme de déploiement optimisée pour Next.js.
+- Permet des déploiements continus à partir de GitHub.
+- Performances élevées (CDN global, edge functions, etc.).
+- Intégration native avec les previews de branches pour faciliter les tests.
+
+---
+
+## Intelligence Artificielle
+
+### **Cursor & GPT (Agents IA)**
+- Utilisation de **Cursor** comme environnement de développement assisté par IA.
+- Agents GPT intégrés pour :
+  - Génération de code
+  - Refactorisation automatique
+  - Suggestions d’optimisation
+  - Documentation automatique
+- Accélération de la productivité et réduction des erreurs humaines.
+
+---
+
+## UI & Design System
+
+### **Bolt New**
+- Utilisé pour construire des composants UI modernes, propres et réutilisables.
+- Inspiré des systèmes de design minimalistes (shadcn/ui).
+- Idéal pour une expérience utilisateur fluide, cohérente et accessible.
+
+---
+
+## Autres outils
+
+- **GitHub** : gestion du code, du versionning, des issues et des discussions communautaires.
+
+
+## Contraintes du code du projet :
+- bien prendre en compte la base de données pour implémenter correctement les fonctionnalités, elle se trouve dans le schema.prisma
+- toutes les actions qui vont faire appel à des APIs devrons se trouver dans le dossier /app/api 
+- Prendre en compte la stack technique et ne pas passer sur autre chose
+- Ne pas modifier les styles sauf si je le demande
+
+
+Directory Structure:
+
+└── ./
+    ├── app
+    │   ├── api
+    │   │   └── auth
+    │   │       └── [...nextauth]
+    │   │           ├── options.ts
+    │   │           └── route.ts
+    │   ├── badges
+    │   │   ├── Components
+    │   │   │   └── Content.tsx
+    │   │   └── page.tsx
+    │   ├── classement
+    │   │   ├── Components
+    │   │   │   ├── Content.tsx
+    │   │   │   └── Leaderboard.tsx
+    │   │   └── page.tsx
+    │   ├── Components
+    │   │   ├── backgrond.tsx
+    │   │   ├── breadcrumb.tsx
+    │   │   ├── button.tsx
+    │   │   ├── Card.tsx
+    │   │   ├── command.tsx
+    │   │   ├── Content.tsx
+    │   │   ├── fakecalendar.tsx
+    │   │   ├── Header.tsx
+    │   │   ├── Sidebar.tsx
+    │   │   └── Tables.tsx
+    │   ├── contributions
+    │   │   ├── Components
+    │   │   │   ├── Content.tsx
+    │   │   │   └── fakecalendar.tsx
+    │   │   └── page.tsx
+    │   ├── defis
+    │   │   ├── Components
+    │   │   │   └── Content.tsx
+    │   │   └── page.tsx
+    │   ├── evenements
+    │   │   ├── Components
+    │   │   │   └── evenements.tsx
+    │   │   └── page.tsx
+    │   ├── guide
+    │   │   ├── Components
+    │   │   │   └── Content.tsx
+    │   │   └── page.tsx
+    │   ├── integrations
+    │   │   ├── Components
+    │   │   │   └── Integrations.tsx
+    │   │   └── page.tsx
+    │   ├── login
+    │   │   ├── Components
+    │   │   │   └── Content.tsx
+    │   │   └── page.tsx
+    │   ├── profil
+    │   │   ├── Components
+    │   │   │   └── Content.tsx
+    │   │   └── page.tsx
+    │   ├── reseaux
+    │   │   ├── Components
+    │   │   │   └── Content.tsx
+    │   │   └── page.tsx
+    │   ├── streak
+    │   │   ├── Components
+    │   │   │   ├── Content.tsx
+    │   │   │   └── fakecalendar.tsx
+    │   │   └── page.tsx
+    │   ├── support
+    │   │   ├── Components
+    │   │   │   └── FeedbackSupport.tsx
+    │   │   └── page.tsx
+    │   ├── globals.css
+    │   ├── layout.tsx
+    │   ├── page.tsx
+    │   └── providers.tsx
+    ├── components
+    │   └── ui
+    │       ├── command.tsx
+    │       ├── dialog.tsx
+    │       └── dropdown-menu.tsx
+    ├── lib
+    │   ├── auth.ts
+    │   ├── db.ts
+    │   └── prisma.ts
+    ├── types
+    │   └── next-auth.d.ts
+    ├── middleware.ts
+    ├── next.config.ts
+    └── tailwind.config.ts

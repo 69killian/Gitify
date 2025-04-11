@@ -71,7 +71,7 @@ const Profile = () => {
               </div>
               <div className="flex items-center gap-3 text-gray-400">
                 <Calendar className="w-5 h-5" />
-                <span> Date de création :&nbsp;
+                <span> Membre depuis le&nbsp;
                 {session?.user?.created_at 
                   ? new Date(session.user.created_at).toLocaleDateString('fr-FR', {
                       year: 'numeric',

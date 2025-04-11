@@ -3,7 +3,7 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {Activity, CalendarDays, GitCommit, GitPullRequest, GitMerge } from 'lucide-react';
-import FakeGitHubCalendar from './fakecalendar';
+import GitHubCalendar from '../../Components/githubCalendar';
 import profile from "../../Components/images/profile-test.jpg";
 import LeftParticles from '../../Components/images/Group 194.svg';
 import RightParticles from '../../Components/images/Group 191.svg';
@@ -48,7 +48,7 @@ const StreakPage = () => {
       {/* GitHub Calendar */}
       <div className="mt-6">
         <h2 className="text-2xl font-semibold mb-4">Tes contributions récentes</h2>
-        <FakeGitHubCalendar />
+        <GitHubCalendar />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10">
