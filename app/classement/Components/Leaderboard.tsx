@@ -1,45 +1,102 @@
-import React from 'react';
+"use client";
+import useSWR from "swr";
+import Image from "next/image";
+
+interface Contributor {
+  rank: number;
+  id: string;
+  name: string;
+  username: string;
+  avatar: string;
+  points: number;
+  streak: number;
+}
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const Leaderboard = () => {
-  const contributors = [
-    { rank: 1, username: "CodeMaster99", badge: "Code Legend", icon: "🏅", contributions: "1200 commits" },
-    { rank: 2, username: "DevProX", badge: "Streak God", icon: "🏆🔥", contributions: "110 jours de streak" },
-    { rank: 3, username: "MergeWizard", badge: "Open Source Champion", icon: "🏆", contributions: "25 PRs fusionnées" },
-    { rank: 4, username: "NightOwl", badge: "Night Coder", icon: "🌙", contributions: "Code entre 2h et 4h du matin" },
-    { rank: 5, username: "CommitStorm", badge: "One Day Madness", icon: "💥", contributions: "102 commits en 24h" },
-    { rank: 6, username: "ForkLord", badge: "Forking Pro", icon: "🍴", contributions: "15 forks réalisés" },
-    { rank: 7, username: "RepoKing", badge: "OSS Rockstar", icon: "🎸", contributions: "12 repos publics" },
-    { rank: 8, username: "ChallengeBeast", badge: "Challenge King", icon: "👑", contributions: "12 challenges complétés" },
-    { rank: 9, username: "WeekendHacker", badge: "Weekend Warrior", icon: "🏖️", contributions: "Code le week-end sans interruption" },
-    { rank: 10, username: "BugFixer", badge: "PR Hero", icon: "🦸", contributions: "18 PRs fusionnées" },
-  ];
+  const { data, error, isLoading } = useSWR<Contributor[]>("/api/leaderboard", fetcher);
 
+  // Afficher un placeholder pendant le chargement
+  if (isLoading) {
+    return (
+      <div className="card">
+        <h2 className="text-xl font-semibold mb-6">Top Contributeurs</h2>
+        <div className="space-y-4">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="flex items-center gap-4">
+              <div className="w-8 h-8 flex items-center justify-center rounded-full bg-violet-500/20 animate-pulse"></div>
+              <div className="w-10 h-10 rounded-full bg-violet-500/20 animate-pulse"></div>
+              <div className="flex-1">
+                <div className="w-24 h-4 bg-violet-500/20 animate-pulse rounded"></div>
+                <div className="w-16 h-3 bg-violet-500/10 animate-pulse rounded mt-2"></div>
+              </div>
+              <div className="text-right">
+                <div className="w-16 h-4 bg-violet-500/20 animate-pulse rounded"></div>
+                <div className="w-12 h-3 bg-violet-500/10 animate-pulse rounded mt-2"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Afficher un message d'erreur en cas d'échec
+  if (error) {
+    return (
+      <div className="card">
+        <h2 className="text-xl font-semibold mb-6">Top Contributeurs</h2>
+        <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-md text-red-400">
+          Une erreur est survenue lors du chargement des données
+        </div>
+      </div>
+    );
+  }
+
+  // Afficher les données
   return (
-    <div className="rounded-lg">
-      <div className="overflow-x-auto shadow-lg rounded-lg">
-        <table className="min-w-full text-white">
-          <thead>
-            <tr className="border-b border-[#3B3B3B]/30">
-              <th className="py-3 px-6 text-left text-[#7E7F81]">#</th>
-              <th className="py-3 px-6 text-left text-[#7E7F81]">Pseudo</th>
-              <th className="py-3 px-6 text-left text-[#7E7F81]">Badge</th>
-              <th className="py-3 px-6 text-left text-[#7E7F81]">Contributions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {contributors.map((contributor) => (
-              <tr key={contributor.rank} className="border-b border-[#3B3B3B]/30">
-                <td className="py-4 px-6 font-bold">{contributor.rank}</td>
-                <td className="py-4 px-6 gradient2">{contributor.username}</td>
-                <td className="py-4 px-6"><span className='text-[#000000]'>{contributor.icon}</span> {contributor.badge}</td>
-                <td className="py-4 px-6">{contributor.contributions}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <div className="card">
+      <h2 className="text-xl font-semibold mb-6">Top Contributeurs</h2>
+      <div className="space-y-4">
+        {data?.map((user) => (
+          <div key={user.id} className="flex items-center gap-4">
+            <div
+              className={`w-8 h-8 flex items-center justify-center rounded-full ${
+                user.rank === 1
+                  ? "bg-yellow-500"
+                  : user.rank === 2
+                  ? "bg-gray-400"
+                  : user.rank === 3
+                  ? "bg-amber-600"
+                  : "bg-violet-500/20"
+              }`}
+            >
+              {user.rank}
+            </div>
+            {/* Pour l'avatar, on utilise Next Image pour optimiser le chargement */}
+            <div className="relative w-10 h-10 rounded-full overflow-hidden">
+              <img
+                src={user.avatar}
+                alt={user.name}
+                className="object-cover"
+                
+                sizes="40px"
+              />
+            </div>
+            <div className="flex-1">
+              <div className="font-medium">{user.name}</div>
+              <div className="text-sm text-gray-400">{user.points} points</div>
+            </div>
+            <div className="text-right">
+              <div className="text-violet-400">{user.streak} jours</div>
+              <div className="text-sm text-gray-400">de streak</div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
 };
 
-export default Leaderboard;
+export default Leaderboard; 
