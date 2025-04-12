@@ -60,6 +60,12 @@ button:focus {
   color: transparent; /* Assurez-vous que le texte est transparent afin que le gradient soit visible */
 }
 
+.gradient3 {
+  background-image: linear-gradient(to top, #6200ff, #ffffff);
+  -webkit-background-clip: text; /* Nécessaire pour appliquer le gradient au texte */
+  color: transparent; /* Assurez-vous que le texte est transparent afin que le gradient soit visible */
+}
+
 .gradient-gold {
   background-image: linear-gradient(to bottom, #ffbf00, #ffd631, #ffffffdd);
   -webkit-background-clip: text; /* Applique le gradient au texte */
