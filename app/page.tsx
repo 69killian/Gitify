@@ -9,6 +9,7 @@ export default async function Home() {
   const session = await getServerSession(authOptions);
 
   if (!session) {
+    /*ne pas hésiter si jamais redirect(/login); */
     redirect('/accueil');
   }
 
