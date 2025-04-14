@@ -1,10 +1,9 @@
 "use client"
-import React from 'react';
+import React, { useState } from 'react';
 import GitHubCalendar from './githubCalendar';
 import Breadcrumb from './breadcrumb';
-import Tables from './Tables';
 import { useSession } from 'next-auth/react';
-import useSWR from 'swr';
+import useSWR, { mutate } from 'swr';
 import Link from 'next/link';
 
 // Type pour les badges de l'utilisateur
@@ -18,12 +17,53 @@ interface Badge {
   created_at: Date;
 }
 
+interface Challenge {
+  id: number;
+  name: string;
+  description: string | null;
+  difficulty: string | null;
+  duration: number | null;
+  reward_badge_id: number | null;
+  created_at: Date;
+}
+
 interface UserBadgeType {
   id: number;
   user_id: string;
   badge_id: number;
   unlocked_at: string;
   badge: Badge;
+}
+
+interface StreakType {
+  id: number;
+  user_id: string;
+  start_date: string;
+  end_date: string | null;
+  current_streak: number;
+  longest_streak: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+interface UserChallengeType {
+  id: number;
+  user_id: string;
+  challenge_id: number;
+  start_date: string;
+  end_date: string | null;
+  progress: number;
+  status: string;
+  created_at: string;
+  challenge: Challenge;
+}
+
+interface ProgressDataType {
+  streak: StreakType | null;
+  inProgressChallenges: UserChallengeType[];
+  completedChallenges: UserChallengeType[];
+  userBadges: UserBadgeType[];
 }
 
 // Données statiques pour le fallback
@@ -81,6 +121,13 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 const Content = () => {
   const { data: session } = useSession();
   const { data: userBadges, error, isLoading } = useSWR<UserBadgeType[]>('/api/userbadges', fetcher);
+  
+  // Récupération des données de progression
+  const { data: progressData } = 
+    useSWR<ProgressDataType>(session ? '/api/progress' : null, fetcher);
+  
+  // État pour le chargement de la mise à jour de la progression
+  const [isUpdatingProgress, setIsUpdatingProgress] = useState(false);
 
   // Si aucun badge n'est chargé, utiliser les badges statiques pour la démo
   const displayBadges = !isLoading && !error && userBadges && userBadges.length > 0 
@@ -99,6 +146,79 @@ const Content = () => {
 
   // Nombre total de badges débloqués réels
   const totalBadges = userBadges?.length || displayBadges.length;
+  
+  // Statistiques de progression
+  const currentStreak = progressData?.streak?.current_streak || 0;
+  const longestStreak = progressData?.streak?.longest_streak || 0;
+  const completedChallengesCount = progressData?.completedChallenges?.length || 0;
+  
+  // Fonction pour mettre à jour la progression
+  const updateProgress = async () => {
+    if (!session || isUpdatingProgress) return;
+    
+    try {
+      setIsUpdatingProgress(true);
+      
+      const response = await fetch('/api/progress', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || "Une erreur est survenue");
+      }
+      
+      // Afficher les notifications pour les badges obtenus
+      if (data.awardedBadges && data.awardedBadges.length > 0) {
+        data.awardedBadges.forEach((badge: Badge) => {
+          window.showToast(
+            `🎉 Nouveau badge débloqué : ${badge.name}`,
+            'success',
+            6000
+          );
+        });
+      }
+      
+      // Afficher les notifications pour les challenges complétés
+      if (data.completedChallenges && data.completedChallenges.length > 0) {
+        data.completedChallenges.forEach((challenge: Challenge) => {
+          window.showToast(
+            `🏆 Challenge terminé : ${challenge.name}`,
+            'success',
+            6000
+          );
+        });
+      }
+      
+      // Si aucun nouveau badge ou challenge, afficher un message neutre
+      if ((!data.awardedBadges || data.awardedBadges.length === 0) && 
+          (!data.completedChallenges || data.completedChallenges.length === 0)) {
+        window.showToast(
+          `✅ Progression mise à jour !`,
+          'info',
+          3000
+        );
+      }
+      
+      // Rafraîchir les données affichées
+      mutate('/api/userbadges');
+      mutate('/api/progress');
+      
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour de la progression:", error);
+      window.showToast(
+        error instanceof Error ? error.message : "Erreur lors de la mise à jour",
+        'error',
+        5000
+      );
+    } finally {
+      setIsUpdatingProgress(false);
+    }
+  };
 
   return (
     <>
@@ -122,38 +242,63 @@ const Content = () => {
           <GitHubCalendar />
         </div>
 
+        {/* Bouton de mise à jour de la progression */}
+        <div className="flex justify-center mt-4">
+          <button
+            onClick={updateProgress}
+            disabled={isUpdatingProgress || !session}
+            className={`text-white py-2 px-4 rounded-md flex items-center justify-center ${
+              isUpdatingProgress 
+                ? 'bg-violet-700 opacity-70 cursor-not-allowed' 
+                : 'bg-violet-700 hover:bg-violet-600 cursor-pointer'
+            }`}
+          >
+            {isUpdatingProgress ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Mise à jour en cours...
+              </>
+            ) : (
+              <>🔄 Mettre à jour ma progression</>
+            )}
+          </button>
+        </div>
+
         {/* Divider */}
         <div className="border-none border-[#1D1D1D] my-[50px]"></div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4 mb-[40px]">
 
         <div className="text-[14px] flex items-center gap-4">
-        <div className="text-[75px] gradient">4.805</div>
+        <div className="text-[75px] gradient">{currentStreak}</div>
         <div className="grid gap-2">
           <div className="text-[#7E7F81]">Jours de Streak</div>
           <div className="text-violet-400 inline-block w-[60px] whitespace-nowrap bg-violet-900/40 rounded-full border border-violet-500">
-            {"+ 4.804"}
+            {"+ " + currentStreak}
           </div>
         </div>
       </div>
 
 
           <div className='text-[14px] flex items-center gap-4'>
-            <div className='text-[75px] gradient'>365</div>
+            <div className='text-[75px] gradient'>{longestStreak}</div>
             <div className='grid gap-2'>
               <div className='text-[#7E7F81]'>Record de Streak</div>
               <div className="text-violet-400 inline-block w-[60px] whitespace-nowrap bg-violet-900/40 rounded-full border border-violet-500 px-1">
-            {"+ 365"}
+            {"+ " + longestStreak}
           </div>
             </div>
           </div>
 
           <div className='text-[14px] flex items-center gap-4'>
-            <div className='text-[75px] gradient'>36</div>
+            <div className='text-[75px] gradient'>{completedChallengesCount}</div>
             <div className='grid gap-2'>
               <div className='text-[#7E7F81]'>Défis Réalisés</div>
               <div className="text-violet-400 inline-block w-[60px] whitespace-nowrap bg-violet-900/40 rounded-full border border-violet-500 px-1">
-            {"+ 35"}
+            {"+ " + completedChallengesCount}
           </div>
             </div>
           </div>

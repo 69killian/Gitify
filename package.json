@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "seed-challenges": "npx ts-node scripts/seed-challenges.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.8.0",

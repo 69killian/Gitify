@@ -1,37 +1,34 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../auth/[...nextauth]/options";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import prisma from "@/lib/prisma";
 
+/**
+ * GET /api/challenges
+ * Récupère les challenges disponibles, en cours et complétés pour l'utilisateur
+ */
 export async function GET() {
   try {
-    // Vérification de l'authentification
+    // Vérifier l'authentification de l'utilisateur
     const session = await getServerSession(authOptions);
+    
     if (!session || !session.user) {
-      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+      return NextResponse.json(
+        { error: "Vous devez être connecté pour voir vos challenges." },
+        { status: 401 }
+      );
     }
 
     const userId = session.user.id;
 
-    // Récupérer tous les défis existants
+    // Récupérer tous les challenges disponibles
     const allChallenges = await prisma.challenge.findMany({
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        difficulty: true,
-        duration: true,
-        reward_badge_id: true,
-        rewardBadge: {
-          select: {
-            name: true,
-            icon: true
-          }
-        }
+      include: {
+        rewardBadge: true
       }
     });
 
-    // Récupérer les défis de l'utilisateur
+    // Récupérer les challenges de l'utilisateur
     const userChallenges = await prisma.userChallenge.findMany({
       where: {
         user_id: userId
@@ -45,70 +42,60 @@ export async function GET() {
       }
     });
 
-    // Séparer les défis en cours et complétés
-    const inProgressChallenges = userChallenges.filter(uc => uc.status === "in_progress");
-    const completedChallenges = userChallenges.filter(uc => uc.status === "completed");
+    // Séparer les challenges en cours et complétés
+    const inProgressChallenges = userChallenges.filter(uc => uc.status === "in_progress").map(uc => ({
+      id: uc.id,
+      challengeId: uc.challenge_id,
+      title: uc.challenge.name,
+      description: uc.challenge.description || "",
+      progress: uc.progress,
+      startDate: uc.start_date.toISOString(),
+      timeLeft: uc.challenge.duration ? `${uc.challenge.duration} jours` : "Non défini",
+      badge: uc.challenge.rewardBadge?.icon || "🏆",
+      reward: uc.challenge.rewardBadge?.name || "Badge spécial"
+    }));
 
-    // Identifier les défis disponibles (non commencés par l'utilisateur)
-    const startedChallengeIds = userChallenges.map(uc => uc.challenge_id);
-    const availableChallenges = allChallenges.filter(challenge => 
-      !startedChallengeIds.includes(challenge.id)
-    );
+    const completedChallenges = userChallenges.filter(uc => uc.status === "completed").map(uc => ({
+      id: uc.id,
+      challengeId: uc.challenge_id,
+      title: uc.challenge.name,
+      description: uc.challenge.description || "",
+      completedDate: uc.end_date?.toISOString() || null,
+      badge: uc.challenge.rewardBadge?.icon || "🏆",
+      reward: uc.challenge.rewardBadge?.name || "Badge spécial"
+    }));
 
-    // Récupérer le nombre de badges gagnés
-    const badgesEarned = await prisma.userBadge.count({
-      where: {
-        user_id: userId
-      }
-    });
-
-    // Formater et renvoyer la réponse
-    return NextResponse.json({
-      available: availableChallenges.map(challenge => ({
+    // Identifier les challenges que l'utilisateur n'a pas encore démarrés
+    const userChallengeIds = userChallenges.map(uc => uc.challenge_id);
+    const availableChallenges = allChallenges
+      .filter(challenge => !userChallengeIds.includes(challenge.id))
+      .map(challenge => ({
         id: challenge.id,
         title: challenge.name,
         description: challenge.description || "",
-        difficulty: challenge.difficulty || "Moyen",
-        duration: `${challenge.duration || 7} jours`,
+        difficulty: challenge.difficulty as string || "Moyenne",
+        duration: challenge.duration ? `${challenge.duration} jours` : "Non défini",
         badge: challenge.rewardBadge?.icon || "🏆",
-        reward: `${challenge.rewardBadge?.icon || "🏆"} Badge ${challenge.rewardBadge?.name || challenge.name}`
-      })),
-      inProgress: inProgressChallenges.map(uc => ({
-        id: uc.id,
-        challengeId: uc.challenge_id,
-        title: uc.challenge.name,
-        description: uc.challenge.description || "",
-        progress: uc.progress,
-        startDate: uc.start_date,
-        // Calculer le temps restant en jours
-        timeLeft: uc.challenge.duration 
-          ? `${Math.max(0, uc.challenge.duration - Math.floor((new Date().getTime() - new Date(uc.start_date).getTime()) / (1000 * 60 * 60 * 24)))} jours` 
-          : "En cours",
-        badge: uc.challenge.rewardBadge?.icon || "🏆",
-        reward: `${uc.challenge.rewardBadge?.icon || "🏆"} Badge ${uc.challenge.rewardBadge?.name || uc.challenge.name}`
-      })),
-      completed: completedChallenges.map(uc => ({
-        id: uc.id,
-        challengeId: uc.challenge_id,
-        title: uc.challenge.name,
-        description: uc.challenge.description || "",
-        completedDate: uc.end_date,
-        badge: uc.challenge.rewardBadge?.icon || "🏆",
-        reward: `${uc.challenge.rewardBadge?.icon || "🏆"} Badge ${uc.challenge.rewardBadge?.name || uc.challenge.name}`
-      })),
-      stats: {
-        completedCount: completedChallenges.length,
-        inProgressCount: inProgressChallenges.length,
-        badgesEarned
-      }
+        reward: challenge.rewardBadge?.name || "Badge spécial"
+      }));
+
+    // Calculer des statistiques
+    const stats = {
+      completedCount: completedChallenges.length,
+      inProgressCount: inProgressChallenges.length,
+      badgesEarned: completedChallenges.length // Chaque challenge complété = 1 badge
+    };
+
+    return NextResponse.json({
+      available: availableChallenges,
+      inProgress: inProgressChallenges,
+      completed: completedChallenges,
+      stats
     });
   } catch (error) {
-    console.error("Erreur lors de la récupération des défis:", error);
+    console.error("Erreur lors de la récupération des challenges:", error);
     return NextResponse.json(
-      { 
-        error: "Erreur lors de la récupération des défis",
-        details: error instanceof Error ? error.message : String(error)
-      }, 
+      { error: "Une erreur est survenue lors de la récupération des challenges." },
       { status: 500 }
     );
   }

@@ -1,15 +1,34 @@
 "use client"
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Flame, Medal, Activity, CalendarDays } from 'lucide-react';
+import { Flame, Medal, Activity, CalendarDays, RefreshCw } from 'lucide-react';
 import GitHubCalendar from '../../Components/githubCalendar';
 import profile from "../../Components/images/profile-test.jpg";
 import LeftParticles from '../../Components/images/Group 194.svg';
 import RightParticles from '../../Components/images/Group 191.svg';
+import useSWR, { mutate } from 'swr';
+import { useSession } from 'next-auth/react';
+
+// Fonction pour récupérer les données
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const StreakPage = () => {
-  const user = {
+  const { data: session } = useSession();
+  const [isUpdatingProgress, setIsUpdatingProgress] = useState(false);
+  const { data: progressData, error } = useSWR(session ? '/api/progress' : null, fetcher);
+
+  // Si les données ne sont pas encore chargées, utiliser des données statiques
+  const user = progressData ? {
+    username: session?.user?.name || "User",
+    avatarUrl: session?.user?.image || profile,
+    streakDays: progressData.streak?.current_streak || 0,
+    recordStreak: progressData.streak?.longest_streak || 0,
+    totalCommits: 0, // À compléter avec les données réelles lorsque disponibles
+    bestDay: "Samedi", // À déterminer dynamiquement
+    challengesCompleted: (progressData.completedChallenges || []).length,
+    badgesUnlocked: (progressData.userBadges || []).length,
+  } : {
     username: "DevUser",
     avatarUrl: profile,
     streakDays: 4805,
@@ -20,18 +39,111 @@ const StreakPage = () => {
     badgesUnlocked: 26,
   };
 
+  // Fonction pour mettre à jour la progression
+  const updateProgress = async () => {
+    if (!session || isUpdatingProgress) return;
+    
+    try {
+      setIsUpdatingProgress(true);
+      
+      const response = await fetch('/api/progress', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || "Une erreur est survenue");
+      }
+      
+      // Afficher les notifications pour les badges obtenus
+      if (data.awardedBadges && data.awardedBadges.length > 0) {
+        data.awardedBadges.forEach((badge: any) => {
+          window.showToast(
+            `🎉 Nouveau badge débloqué : ${badge.name}`,
+            'success',
+            6000
+          );
+        });
+      }
+      
+      // Afficher les notifications pour les challenges complétés
+      if (data.completedChallenges && data.completedChallenges.length > 0) {
+        data.completedChallenges.forEach((challenge: any) => {
+          window.showToast(
+            `🏆 Challenge terminé : ${challenge.name}`,
+            'success',
+            6000
+          );
+        });
+      }
+      
+      // Si aucun nouveau badge ou challenge, afficher un message neutre
+      if ((!data.awardedBadges || data.awardedBadges.length === 0) && 
+          (!data.completedChallenges || data.completedChallenges.length === 0)) {
+        window.showToast(
+          `✅ Streak mis à jour !`,
+          'info',
+          3000
+        );
+      }
+      
+      // Rafraîchir les données affichées
+      mutate('/api/progress');
+      
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour de la progression:", error);
+      window.showToast(
+        error instanceof Error ? error.message : "Erreur lors de la mise à jour",
+        'error',
+        5000
+      );
+    } finally {
+      setIsUpdatingProgress(false);
+    }
+  };
+
   return (
     <section className="px-4 md:px-8">
       <div className="flex flex-col items-center gap-6 py-8">
       <button className="z-1 bg-[#160E1E] h-[200px] w-[200px] rounded-full border-2 border-violet-700 overflow-hidden relative flex items-center justify-center">
-        <Image
+        <img
           src={user.avatarUrl}
           alt="User Avatar"
         />
       </button>
-        <div>
+        <div className="text-center">
           <h1 className="text-4xl font-bold flex items-center justify-center gradient">{user.username}</h1>
           <p className="text-gray-400">Continue ta streak et débloque des récompenses exclusives !</p>
+          
+          {/* Bouton de mise à jour de la progression */}
+          <button
+            onClick={updateProgress}
+            disabled={isUpdatingProgress || !session}
+            className={`mt-4 text-white py-2 px-4 rounded-md flex items-center mx-auto ${
+              isUpdatingProgress 
+                ? 'bg-violet-700 opacity-70 cursor-not-allowed' 
+                : 'bg-violet-700 hover:bg-violet-600 cursor-pointer'
+            }`}
+          >
+            {isUpdatingProgress ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Mise à jour en cours...
+              </>
+            ) : (
+              <>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Mettre à jour ma streak
+              </>
+            )}
+          </button>
         </div>
       </div>
 

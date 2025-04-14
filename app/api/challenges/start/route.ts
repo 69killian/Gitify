@@ -1,52 +1,65 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../auth/[...nextauth]/options";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import prisma from "@/lib/prisma";
 
+/**
+ * POST /api/challenges/start
+ * Démarre un nouveau challenge pour l'utilisateur connecté
+ */
 export async function POST(request: Request) {
   try {
-    // Vérification de l'authentification
+    // Vérifier l'authentification de l'utilisateur
     const session = await getServerSession(authOptions);
+    
     if (!session || !session.user) {
-      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+      return NextResponse.json(
+        { error: "Vous devez être connecté pour démarrer un challenge." },
+        { status: 401 }
+      );
     }
 
     const userId = session.user.id;
-    
-    // Récupérer le corps de la requête
     const body = await request.json();
     const { challengeId } = body;
-    
+
     if (!challengeId) {
-      return NextResponse.json({ error: "ID de défi manquant" }, { status: 400 });
+      return NextResponse.json(
+        { error: "L'ID du challenge est requis." },
+        { status: 400 }
+      );
     }
 
-    // Vérifier si le défi existe
+    // Vérifier si le challenge existe
     const challenge = await prisma.challenge.findUnique({
-      where: {
-        id: challengeId
-      }
+      where: { id: challengeId }
     });
 
     if (!challenge) {
-      return NextResponse.json({ error: "Défi introuvable" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Ce challenge n'existe pas." },
+        { status: 404 }
+      );
     }
 
-    // Vérifier si l'utilisateur a déjà commencé ce défi
+    // Vérifier si l'utilisateur a déjà démarré ce challenge
     const existingUserChallenge = await prisma.userChallenge.findFirst({
       where: {
         user_id: userId,
         challenge_id: challengeId,
-        status: {
-          in: ["in_progress", "completed"]
-        }
+        status: { in: ["in_progress", "completed"] }
       }
     });
 
     if (existingUserChallenge) {
-      return NextResponse.json({ 
-        error: "Vous avez déjà commencé ou complété ce défi" 
-      }, { status: 409 });
+      return NextResponse.json(
+        { 
+          error: existingUserChallenge.status === "completed" 
+            ? "Vous avez déjà complété ce challenge." 
+            : "Vous avez déjà démarré ce challenge." 
+        },
+        { status: 400 }
+      );
     }
 
     // Créer un nouveau UserChallenge
@@ -54,24 +67,20 @@ export async function POST(request: Request) {
       data: {
         user_id: userId,
         challenge_id: challengeId,
-        start_date: new Date(),
+        status: "in_progress",
         progress: 0,
-        status: "in_progress"
+        start_date: new Date()
       }
     });
 
     return NextResponse.json({
-      success: true,
-      message: "Défi commencé avec succès",
+      message: "Challenge démarré avec succès.",
       userChallenge
     });
   } catch (error) {
-    console.error("Erreur lors du démarrage du défi:", error);
+    console.error("Erreur lors du démarrage du challenge:", error);
     return NextResponse.json(
-      { 
-        error: "Erreur lors du démarrage du défi",
-        details: error instanceof Error ? error.message : String(error)
-      }, 
+      { error: "Une erreur est survenue lors du démarrage du challenge." },
       { status: 500 }
     );
   }

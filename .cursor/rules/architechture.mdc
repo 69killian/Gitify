@@ -343,3 +343,41 @@ Directory Structure:
     ├── middleware.ts
     ├── next.config.ts
     └── tailwind.config.ts
+
+
+     challenges
+
+     ('Streak Newbie Challenge', 'Atteignez un streak de 3 jours.', 'Facile', 3, 1, NOW()),
+    ('Streak Enthusiast Challenge', 'Atteignez un streak de 7 jours.', 'Moyenne', 7, 2, NOW()),
+    ('Streak Warrior Challenge', 'Atteignez un streak de 15 jours.', 'Difficile', 15, 3, NOW()),
+    ('Streak Master Challenge', 'Atteignez un streak de 30 jours.', 'Très Difficile', 30, 4, NOW()),
+    ('Streak God Challenge', 'Atteignez un streak de 100 jours.', 'Extrême', 100, 5, NOW()),
+    
+    -- Contributions
+    ('First Commit Challenge', 'Faites votre premier commit.', 'Facile', 1, 6, NOW()),
+    ('Contributor Challenge', 'Faites 10 commits.', 'Moyenne', 10, 7, NOW()),
+    ('Code Machine Challenge', 'Faites 100 commits.', 'Difficile', 100, 8, NOW()),
+    ('Code Addict Challenge', 'Faites 500 commits.', 'Très Difficile', 500, 9, NOW()),
+    ('Code Legend Challenge', 'Faites 1000 commits.', 'Extrême', 1000, 10, NOW()),
+
+    -- Pull Requests
+    ('First PR Challenge', 'Faites votre première pull request.', 'Facile', 1, 11, NOW()),
+    ('Merge Master Challenge', 'Fusionnez 5 PRs.', 'Moyenne', 5, 12, NOW()),
+    ('PR Hero Challenge', 'Fusionnez 10 PRs.', 'Difficile', 10, 13, NOW()),
+    ('Open Source Champion Challenge', 'Fusionnez 20 PRs.', 'Très Difficile', 20, 14, NOW()),
+
+    -- Open Source
+    ('Public Repo Challenge', 'Créez votre premier repo public.', 'Facile', 1, 15, NOW()),
+    ('Open Source Addict Challenge', 'Créez 3 repos publics.', 'Moyenne', 3, 16, NOW()),
+    ('OSS Rockstar Challenge', 'Créez 10 repos publics.', 'Difficile', 10, 17, NOW()),
+
+    -- Challenges
+    ('Weekly Challenge', 'Participez à un défi hebdomadaire.', 'Facile', 7, 18, NOW()),
+    ('Challenge Grinder', 'Complétez 5 challenges.', 'Moyenne', 35, 19, NOW()),
+    ('Challenge King', 'Complétez 10 challenges.', 'Difficile', 70, 20, NOW()),
+
+    -- Badges Secrets
+    ('Night Coder Challenge', 'Commit entre 2h et 4h du matin.', 'Facile', 1, 21, NOW()),
+    ('Weekend Warrior Challenge', 'Commit un samedi et dimanche.', 'Moyenne', 2, 22, NOW()),
+    ('One Day Madness Challenge', 'Faites 100 commits en 24h.', 'Extrême', 1, 23, NOW()),
+    ('Forking Pro Challenge', 'Faites 10 forks.', 'Difficile', 10, 24, NOW());
