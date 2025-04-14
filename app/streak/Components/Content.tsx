@@ -16,7 +16,8 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 const StreakPage = () => {
   const { data: session } = useSession();
   const [isUpdatingProgress, setIsUpdatingProgress] = useState(false);
-  const { data: progressData, error } = useSWR(session ? '/api/progress' : null, fetcher);
+  const { data: progressData } = useSWR(session ? '/api/progress' : null, fetcher);
+  const { data: contributionsData } = useSWR(session ? '/api/contributions' : null, fetcher);
 
   // Si les données ne sont pas encore chargées, utiliser des données statiques
   const user = progressData ? {
@@ -24,16 +25,16 @@ const StreakPage = () => {
     avatarUrl: session?.user?.image || profile,
     streakDays: progressData.streak?.current_streak || 0,
     recordStreak: progressData.streak?.longest_streak || 0,
-    totalCommits: 0, // À compléter avec les données réelles lorsque disponibles
+    totalCommits: contributionsData?.totalCommits || 0, // Utiliser le nombre de commits de l'API contributions
     bestDay: "Samedi", // À déterminer dynamiquement
     challengesCompleted: (progressData.completedChallenges || []).length,
     badgesUnlocked: (progressData.userBadges || []).length,
   } : {
     username: "DevUser",
     avatarUrl: profile,
-    streakDays: 4805,
-    recordStreak: 365,
-    totalCommits: 10234,
+    streakDays: 0,
+    recordStreak: 0,
+    totalCommits: 0,
     bestDay: "Samedi",
     challengesCompleted: 36,
     badgesUnlocked: 26,
@@ -61,7 +62,7 @@ const StreakPage = () => {
       
       // Afficher les notifications pour les badges obtenus
       if (data.awardedBadges && data.awardedBadges.length > 0) {
-        data.awardedBadges.forEach((badge: any) => {
+        data.awardedBadges.forEach((badge: { name: string }) => {
           window.showToast(
             `🎉 Nouveau badge débloqué : ${badge.name}`,
             'success',
@@ -72,7 +73,7 @@ const StreakPage = () => {
       
       // Afficher les notifications pour les challenges complétés
       if (data.completedChallenges && data.completedChallenges.length > 0) {
-        data.completedChallenges.forEach((challenge: any) => {
+        data.completedChallenges.forEach((challenge: { name: string }) => {
           window.showToast(
             `🏆 Challenge terminé : ${challenge.name}`,
             'success',
@@ -93,6 +94,7 @@ const StreakPage = () => {
       
       // Rafraîchir les données affichées
       mutate('/api/progress');
+      mutate('/api/contributions'); // Rafraîchir aussi les données de contributions
       
     } catch (error) {
       console.error("Erreur lors de la mise à jour de la progression:", error);
@@ -110,10 +112,19 @@ const StreakPage = () => {
     <section className="px-4 md:px-8">
       <div className="flex flex-col items-center gap-6 py-8">
       <button className="z-1 bg-[#160E1E] h-[200px] w-[200px] rounded-full border-2 border-violet-700 overflow-hidden relative flex items-center justify-center">
-        <img
-          src={user.avatarUrl}
-          alt="User Avatar"
-        />
+        {typeof user.avatarUrl === 'string' ? (
+          <img
+            src={user.avatarUrl}
+            alt="User Avatar"
+          />
+        ) : (
+          <Image
+            src={user.avatarUrl}
+            alt="User Avatar"
+            layout="fill"
+            objectFit="cover"
+          />
+        )}
       </button>
         <div className="text-center">
           <h1 className="text-4xl font-bold flex items-center justify-center gradient">{user.username}</h1>
@@ -231,7 +242,7 @@ const StreakPage = () => {
   );
 };
 
-const StatCard = ({ icon, title, value }: { icon: JSX.Element; title: string; value: number }) => {
+const StatCard = ({ icon, title, value }: { icon: React.ReactNode; title: string; value: number }) => {
   return (
     <div className="relative z-10 py-3 px-6 bg-[#1B1B1B]  text-center transition-colors duration-300 rounded-[8px] p-1 shadow-md shadow-[#101010] border-t-2 border-gray-300/10 w-full h-[92px] rounded-[6px] border border-[#292929] text-[16px] flex justify-center items-center gap-4 p-4">
       <div className="text-violet-500">{icon}</div>

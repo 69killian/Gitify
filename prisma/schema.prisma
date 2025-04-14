@@ -110,6 +110,7 @@ model Contribution {
   user       User     @relation(fields: [user_id], references: [id])
   
   @@index([user_id, type])
+  @@unique([user_id, type, repository, date])
 }
 
 model Challenge {
