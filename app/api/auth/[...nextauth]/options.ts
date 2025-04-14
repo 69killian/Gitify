@@ -36,11 +36,14 @@ export const authOptions: NextAuthOptions = {
             updated_at: new Date(),
           };
 
+          let userId: string;
+
           if (existingUser) {
             await prisma.user.update({
               where: { id: existingUser.id },
               data: userData
             });
+            userId = existingUser.id;
 
             const existingAccount = await prisma.account.findFirst({
               where: {
@@ -71,6 +74,7 @@ export const authOptions: NextAuthOptions = {
                 created_at: new Date(),
               }
             });
+            userId = newUser.id;
 
             await prisma.account.create({
               data: {
@@ -84,6 +88,35 @@ export const authOptions: NextAuthOptions = {
               },
             });
           }
+
+          // Créer ou mettre à jour l'intégration GitHub
+          await prisma.integration.upsert({
+            where: { 
+              user_id_service: { 
+                user_id: userId, 
+                service: "GitHub" 
+              } 
+            },
+            update: {
+              status: "Connecté",
+              access_token: account.access_token,
+              refresh_token: account.refresh_token,
+              token_expires_at: account.expires_at ? new Date(account.expires_at * 1000) : null,
+              permissions: ["Lecture et écriture des dépôts publics"],
+              updated_at: new Date()
+            },
+            create: {
+              user_id: userId,
+              service: "GitHub",
+              status: "Connecté",
+              access_token: account.access_token,
+              refresh_token: account.refresh_token,
+              token_expires_at: account.expires_at ? new Date(account.expires_at * 1000) : null,
+              permissions: ["Lecture et écriture des dépôts publics"],
+              created_at: new Date(),
+              updated_at: new Date()
+            }
+          });
 
           return true;
 
@@ -157,7 +190,7 @@ export const authOptions: NextAuthOptions = {
     },
 
     async redirect({ url, baseUrl }) {
-      return baseUrl;
+      return url && typeof url === 'string' && url.startsWith(baseUrl) ? url : baseUrl;
     },
   },
 
