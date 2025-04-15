@@ -1,9 +1,48 @@
 "use client";
+import { useState, useEffect } from "react";
 import Breadcrumb from "../../Components/breadcrumb";
 import Leaderboard from "./Leaderboard";
 import Podium from "./Podium";
 
+type StreakDistribution = {
+  range: string;
+  count: number;
+};
+
 const TrophyRoom = () => {
+  const [streakDistribution, setStreakDistribution] = useState<StreakDistribution[]>([
+    { range: "1-7 jours", count: 0 },
+    { range: "8-30 jours", count: 0 },
+    { range: "31-90 jours", count: 0 },
+    { range: "91+ jours", count: 0 }
+  ]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchStreakDistribution = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/stats/streak-distribution');
+        
+        if (!response.ok) {
+          throw new Error('Erreur lors de la récupération des données de distribution');
+        }
+        
+        const data = await response.json();
+        setStreakDistribution(data.distributions);
+        setError(null);
+      } catch (err) {
+        console.error('Erreur de chargement des distributions:', err);
+        setError('Impossible de charger les statistiques de distribution');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStreakDistribution();
+  }, []);
+
   return (
     <section className="px-4 md:px-8">
       <Breadcrumb pagename="classement" />
@@ -28,53 +67,33 @@ const TrophyRoom = () => {
             <div className="space-y-6">
               <div>
                 <div className="text-sm text-gray-400 mb-2">Distribution des streaks</div>
-                <div className="space-y-2">
-                  {[
-                    { range: "1-7 jours", count: 45 },
-                    { range: "8-30 jours", count: 30 },
-                    { range: "31-90 jours", count: 15 },
-                    { range: "91+ jours", count: 10 }
-                  ].map((stat) => (
-                    <div key={stat.range}>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span>{stat.range}</span>
-                        <span>{stat.count}%</span>
+                {loading ? (
+                  <div className="flex justify-center py-4">
+                    <div className="animate-pulse text-violet-400">Chargement...</div>
+                  </div>
+                ) : error ? (
+                  <div className="text-red-400 text-sm py-2">{error}</div>
+                ) : (
+                  <div className="space-y-2">
+                    {streakDistribution.map((stat) => (
+                      <div key={stat.range}>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span>{stat.range}</span>
+                          <span>{stat.count}%</span>
+                        </div>
+                        <div className="h-2 bg-violet-900/20 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-violet-500 rounded-full"
+                            style={{ width: `${stat.count}%` }}
+                          />
+                        </div>
                       </div>
-                      <div className="h-2 bg-violet-900/20 rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-violet-500 rounded-full"
-                          style={{ width: `${stat.count}%` }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
-              <div>
-                <div className="text-sm text-gray-400 mb-2">Top langages</div>
-                <div className="space-y-2">
-                  {[
-                    { name: "JavaScript", percentage: 35 },
-                    { name: "Python", percentage: 25 },
-                    { name: "Java", percentage: 20 },
-                    { name: "TypeScript", percentage: 15 }
-                  ].map((language) => (
-                    <div key={language.name}>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span>{language.name}</span>
-                        <span>{language.percentage}%</span>
-                      </div>
-                      <div className="h-2 bg-violet-900/20 rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-violet-500 rounded-full"
-                          style={{ width: `${language.percentage}%` }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              
             </div>
           </div>
         </div>
