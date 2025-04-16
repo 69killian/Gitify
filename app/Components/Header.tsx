@@ -84,7 +84,7 @@ const Header = () => {
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           className="bg-[#160E1E] h-10 w-10 rounded-full hover:bg-[#160E1E] transition duration-300 border border-[#1d1d1d] text-white px-2 pt-2 pb-1 focus:outline-none focus:ring-2 focus:ring-violet-700 overflow-hidden relative"
         >
-          <img
+          <Image
             src={session?.user?.image || profile} 
             alt="Profile" 
             layout="fill" 

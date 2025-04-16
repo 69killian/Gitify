@@ -113,9 +113,11 @@ const StreakPage = () => {
       <div className="flex flex-col items-center gap-6 py-8">
       <button className="z-1 bg-[#160E1E] h-[200px] w-[200px] rounded-full border-2 border-violet-700 overflow-hidden relative flex items-center justify-center">
         {typeof user.avatarUrl === 'string' ? (
-          <img
+          <Image
             src={user.avatarUrl}
             alt="User Avatar"
+            layout="fill"
+            objectFit="cover"
           />
         ) : (
           <Image

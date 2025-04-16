@@ -104,7 +104,7 @@ const Podium = () => {
       <div className="flex justify-center items-end gap-6 py-8">
         {/* 2ème place (à gauche) */}
         <div className="flex flex-col items-center">
-          <img
+          <Image
             src={second?.avatar || "https://avatars.githubusercontent.com/u/583231?v=4"} 
             alt={`Avatar de ${second?.name || 'utilisateur'}`} 
             width={250} 
@@ -117,7 +117,7 @@ const Podium = () => {
 
         {/* 1ère place (au milieu) */}
         <div className="flex flex-col items-center">
-          <img 
+          <Image
             src={first?.avatar || "https://avatars.githubusercontent.com/u/583231?v=4"} 
             alt={`Avatar de ${first?.name || 'utilisateur'}`}
             width={350} 
@@ -130,7 +130,7 @@ const Podium = () => {
 
         {/* 3ème place (à droite) */}
         <div className="flex flex-col items-center">
-          <img
+          <Image
             src={third?.avatar || "https://avatars.githubusercontent.com/u/583231?v=4"} 
             alt={`Avatar de ${third?.name || 'utilisateur'}`}
             width={250} 

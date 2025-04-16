@@ -39,6 +39,9 @@ export function CommandDemo() {
   const [error, setError] = useState<string | undefined>(undefined);
   const [isOpen, setIsOpen] = useState(false);
 
+  // ID unique pour le menu de résultats
+  const searchResultsId = "search-results-dropdown";
+
   // Référence pour détecter les clics en dehors du dropdown
   const searchRef = useRef<HTMLDivElement>(null);
 
@@ -67,7 +70,7 @@ export function CommandDemo() {
           try {
             const errorData = await response.json();
             errorMessage = errorData.error || errorMessage;
-          } catch (parseError) {
+          } catch {
             errorMessage = await response.text() || errorMessage;
           }
           throw new Error(errorMessage);
@@ -144,6 +147,7 @@ export function CommandDemo() {
           onKeyDown={handleKeyDown}
           aria-label="Recherche"
           aria-expanded={isOpen}
+          aria-controls={searchResultsId}
           role="combobox"
           autoComplete="off"
         />
@@ -170,15 +174,17 @@ export function CommandDemo() {
       </div>
 
       {/* Résultats de recherche */}
-      <SearchResults
-        isOpen={isOpen}
-        badges={results.badges}
-        challenges={results.challenges}
-        pages={results.pages}
-        isLoading={isLoading}
-        error={error}
-        onClose={() => setIsOpen(false)}
-      />
+      <div id={searchResultsId}>
+        <SearchResults
+          isOpen={isOpen}
+          badges={results.badges}
+          challenges={results.challenges}
+          pages={results.pages}
+          isLoading={isLoading}
+          error={error}
+          onClose={() => setIsOpen(false)}
+        />
+      </div>
     </div>
   );
 }

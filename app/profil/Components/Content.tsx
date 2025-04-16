@@ -2,24 +2,17 @@
 import Image from 'next/image';
 import React from 'react';
 import Breadcrumb from '../../Components/breadcrumb';
-import profil from '../../Components/images/profile-test.jpg';
 import { Paperclip } from 'lucide-react';
 import { PenLine } from 'lucide-react';
 import { Download } from 'lucide-react';
 import LeftParticles from '../../Components/images/Group 194.svg';
 import RightParticles from '../../Components/images/Group 191.svg';
 import Link from 'next/link';
-import { Mail, Github, Globe, MapPin, Calendar, Settings, Shield } from 'lucide-react';
+import { Mail, Github, Globe, Calendar, Settings, Shield } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 
 
 const Profile = () => {
-  const profile = {
-    githubId: "abc123herghedf2695982gberg",
-    username: "devUser",
-    avatarUrl: "https://via.placeholder.com/150",
-    email: "devuser@example.com",
-  };
   const { data: session } = useSession();
 
 
@@ -33,7 +26,7 @@ const Profile = () => {
         {/* Profile Section */}
         <div className="flex flex-col items-center justify-center gap-4">
           <button className="z-1 bg-[#160E1E] h-[200px] w-[200px] rounded-full border-2 border-violet-700 overflow-hidden relative flex items-center justify-center">
-            <img
+            <Image
               src={session?.user?.image} 
               alt="Profile" 
               layout="fill" 
@@ -45,7 +38,8 @@ const Profile = () => {
             <Paperclip height={15}/> {session?.user?.github_id}
           </div>
 
-          <button className="text-[13.49px] my-2 text-white cursor-pointer bg-violet-800 hover:bg-violet-600 transition-all duration-200 w-[165px] h-[42px] border border-1 border-violet-500 text-[12px] flex justify-center items-center">
+          {/* Hidden Change Photo button for now */}
+          <button className="hidden text-[13.49px] my-2 text-white cursor-pointer bg-violet-800 hover:bg-violet-600 transition-all duration-200 w-[165px] h-[42px] border border-1 border-violet-500 text-[12px] flex justify-center items-center">
             <Image src={LeftParticles} alt="Left Particles" className="absolute left-0" />
             <Link className='flex' href="https://mighty-travel-887542.framer.app/pricing" target="_blank">
               <Download height={17}/> Changer de photo
@@ -110,7 +104,7 @@ const Profile = () => {
 
           <button className="mt-10 bg-[#1B1B1B] hover:bg-[#121212] transition-all duration-200 w-[276px] h-[52px] rounded-[6px] border border-1 border-[#292929] text-[15px] relative flex justify-center items-center">
             <Image src={LeftParticles} alt="Left Particles" className="absolute left-0" />
-            <Link href="https://mighty-travel-887542.framer.app/pricing" target="_blank">
+            <Link href="https://warmhearted-imagine-949567.framer.app/" target="_blank">
               Gestion des <span className="gradient">Abonnements</span>
             </Link>
             <Image src={RightParticles} alt="Right Particles" className="absolute right-0" />
@@ -165,7 +159,8 @@ const Profile = () => {
                     value={session?.user?.bio}
                   />
                 </div>
-                <button type="submit" className="text-[13.49px] my-2 text-white cursor-pointer bg-violet-800 hover:bg-violet-600 transition-all duration-200 w-[250px] h-[42px] border border-1 border-violet-500 text-[12px] flex justify-center items-center">
+                {/* Hidden Save button for now */}
+                <button type="submit" className="hidden text-[13.49px] my-2 text-white cursor-pointer bg-violet-800 hover:bg-violet-600 transition-all duration-200 w-[250px] h-[42px] border border-1 border-violet-500 text-[12px] flex justify-center items-center">
                   Sauvegarder les modifications
                 </button>
               </form>

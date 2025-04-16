@@ -76,11 +76,12 @@ const Leaderboard = () => {
             </div>
             {/* Pour l'avatar, on utilise Next Image pour optimiser le chargement */}
             <div className="relative w-10 h-10 rounded-full overflow-hidden">
-              <img
+              <Image
                 src={user.avatar}
                 alt={user.name}
                 className="object-cover"
-                
+                layout="fill"
+                objectFit="cover"
                 sizes="40px"
               />
             </div>

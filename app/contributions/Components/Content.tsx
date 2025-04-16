@@ -116,8 +116,8 @@ const StreakPage = () => {
     <section className="px-4 md:px-8">
       <div className="flex flex-col items-center gap-6 py-8">
         <button className="z-1 bg-[#160E1E] h-[200px] w-[200px] rounded-full border-2 border-violet-700 overflow-hidden relative flex items-center justify-center">
-          <img
-            src={String(session?.user?.image || fallbackUser.avatarUrl)}
+          <Image
+            src={typeof session?.user?.image === 'string' ? session.user.image : fallbackUser.avatarUrl}
             alt="User Avatar"
             width={200}
             height={200}

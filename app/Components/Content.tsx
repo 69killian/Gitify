@@ -262,7 +262,7 @@ const Content = () => {
                 Mise à jour en cours...
               </>
             ) : (
-              <>🔄 Mettre à jour ma progression</>
+              <>🔄 Mise à jour du Streak</>
             )}
           </button>
         </div>

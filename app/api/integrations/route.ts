@@ -43,6 +43,7 @@ export async function GET() {
           : "Aucune autorisation accordée",
         icon: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
       },
+      /* Used for future integrations
       {
         name: "Discord",
         status: "Non connecté",
@@ -55,6 +56,7 @@ export async function GET() {
         permissions: "Aucune autorisation accordée",
         icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/X_logo_2023_original.svg/300px-X_logo_2023_original.svg.png?20230728155658",
       },
+      */
     ];
 
     return NextResponse.json({
