@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, Trophy, Star, Award } from "lucide-react";
 import Breadcrumb from "../../Components/breadcrumb";
-import Tables from "../../Components/Tables";
 import useSWR from "swr";
 import { useSession } from "next-auth/react";
 
@@ -26,6 +25,22 @@ interface UserBadgeType {
   badge: Badge;
 }
 
+// Type pour les badges en progression
+interface BadgeProgress {
+  name: string;
+  current: number;
+  target: number;
+  progress: number;
+  icon?: string | null;
+  description?: string | null;
+}
+
+// Réponse de l'API pour les badges en progression
+interface BadgesProgressResponse {
+  badgesInProgress: BadgeProgress[];
+  totalProgress: number;
+}
+
 // Pour le développement, utilisation des badges statiques en fallback
 const staticBadges = [
   { id: 1, badge: "Streak Newbie", description: "Premier streak atteint", condition: "3 jours de streak", icon: "🔥", category: "🔥 Streaks" },
@@ -39,8 +54,16 @@ const staticBadges = [
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const TrophyRoom = () => {
-  const { data: session } = useSession();
+  // useSession est nécessaire pour l'authentification des API
+  useSession();
+  
   const { data: userBadges, error, isLoading } = useSWR<UserBadgeType[]>('/api/userbadges', fetcher);
+  const { 
+    data: badgesProgressData, 
+    error: progressError, 
+    isLoading: isLoadingProgress 
+  } = useSWR<BadgesProgressResponse>('/api/badges/in-progress', fetcher);
+  
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // Si aucun badge n'est chargé, utiliser les badges statiques pour la démo
@@ -89,16 +112,25 @@ const TrophyRoom = () => {
   // Nombre total de badges débloqués
   const totalBadges = displayBadges.length;
   
-  // Simuler les badges rares et la progression (à améliorer avec des données réelles)
-  const rareBadges = Math.round(totalBadges * 0.4); // 40% des badges sont considérés comme rares
-  const totalProgressPercentage = Math.min(Math.round((totalBadges / 50) * 100), 100); // 50 badges max
+  // Utiliser la progression totale de l'API ou une valeur par défaut
+  const totalProgressPercentage = !isLoadingProgress && !progressError && badgesProgressData 
+    ? badgesProgressData.totalProgress 
+    : Math.min(Math.round((totalBadges / 50) * 100), 100); // Fallback: 50 badges max
 
-  // Badges en cours de progression (à remplacer par des données réelles plus tard)
-  const badgesInProgress = [
-    { name: 'Streak Master', progress: 75, current: 23, target: 30 },
-    { name: 'Code Legend', progress: 45, current: 450, target: 1000 },
-    { name: 'PR Hero', progress: 60, current: 6, target: 10 },
+  // Simuler les badges rares
+  const rareBadges = Math.round(totalBadges * 0.4); // 40% des badges sont considérés comme rares
+
+  // Fallback pour les badges en progression si l'API échoue
+  const fallbackBadgesInProgress = [
+    { name: 'Streak Master', progress: 75, current: 23, target: 30, icon: '🏅🔥', description: null },
+    { name: 'Code Legend', progress: 45, current: 450, target: 1000, icon: '👑', description: null },
+    { name: 'PR Hero', progress: 60, current: 6, target: 10, icon: '🦸', description: null },
   ];
+
+  // Utiliser les données dynamiques ou le fallback
+  const badgesInProgress = (!isLoadingProgress && !progressError && badgesProgressData?.badgesInProgress) 
+    ? badgesProgressData.badgesInProgress 
+    : fallbackBadgesInProgress;
 
   return (
     <section className="px-4 md:px-8">
@@ -180,7 +212,7 @@ const TrophyRoom = () => {
         <div className="relative z-10 py-3 px-6 bg-[#241730] rounded-sm border border-[#292929] transition-colors duration-300 shadow-md w-full h-[92px] rounded-[6px] flex items-center gap-4 p-4">
           <Award className="w-8 h-8 text-violet-500" />
           <div>
-            <div className="text-2xl font-bold gradient">{totalProgressPercentage}%</div>
+            <div className="text-2xl font-bold gradient">{totalProgressPercentage || 0}%</div>
             <div className="text-sm text-gray-400">Progression totale</div>
           </div>
         </div>
@@ -189,24 +221,43 @@ const TrophyRoom = () => {
       {/* Section Badges en cours */}
       <div className="relative z-10 bg-[#241730] rounded-sm border border-[#292929] py-3 px-6 transition-colors duration-300 shadow-md border-t-2 w-full rounded-[6px] text-[16px] flex flex-col justify-start items-start gap-4 p-4 mb-8">
         <h2 className="text-xl font-semibold">Badges en cours</h2>
-        <div className="space-y-6 w-full">
-          {badgesInProgress.map((badge) => (
-            <div key={badge.name} className="space-y-2">
-              <div className="flex justify-between">
-                <span className="font-medium">{badge.name}</span>
-                <span className="text-gray-400">
-                  {badge.current}/{badge.target}
-                </span>
+        {isLoadingProgress ? (
+          <div className="flex justify-center w-full py-4">
+            <div className="animate-pulse text-violet-400">Chargement des progressions...</div>
+          </div>
+        ) : progressError ? (
+          <div className="text-red-400 text-sm py-2">Erreur lors du chargement des progressions</div>
+        ) : badgesInProgress.length === 0 ? (
+          <div className="w-full text-center py-4 text-gray-400">
+            <p>Aucun badge en cours pour le moment</p>
+            <p className="text-sm mt-2">Continuez à contribuer pour progresser vers de nouveaux badges !</p>
+          </div>
+        ) : (
+          <div className="space-y-6 w-full">
+            {badgesInProgress.map((badge) => (
+              <div key={badge.name} className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="font-medium flex items-center gap-2">
+                    {badge.icon && <span className="text-xl">{badge.icon}</span>}
+                    {badge.name}
+                  </span>
+                  <span className="text-gray-400">
+                    {badge.current}/{badge.target}
+                  </span>
+                </div>
+                <div className="h-2 bg-violet-900/20 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-violet-500 rounded-full"
+                    style={{ width: `${badge.progress}%` }}
+                  />
+                </div>
+                {badge.description && (
+                  <p className="text-xs text-gray-400 mt-1">{badge.description}</p>
+                )}
               </div>
-              <div className="h-2 bg-violet-900/20 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-violet-500 rounded-full"
-                  style={{ width: `${badge.progress}%` }}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
       
       {/* Vue d'ensemble par catégorie */}
