@@ -1,5 +1,4 @@
-import { Profile, Account } from "next-auth/providers";
-import { DefaultSession } from "next-auth";
+import type { DefaultSession } from "next-auth";
 import 'next-auth';
 
 declare module "next-auth" {
@@ -41,6 +40,7 @@ declare module "next-auth/jwt" {
       bio?: string | null;
       website?: string | null;
       created_at?: Date | null;
+      accessToken?: string;
     }
   }
   

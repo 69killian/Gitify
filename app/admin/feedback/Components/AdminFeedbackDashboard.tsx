@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import useSWR, { mutate } from 'swr';
 import { ThumbsUp, AlertCircle, MessageSquare, Loader2, Check, Filter, Search, MoreHorizontal } from "lucide-react";
 import Breadcrumb from '../../../Components/breadcrumb';
+import Image from "next/image";
 
 // Types
 type FeedbackStatus = "pending" | "En cours" | "Résolu" | "Répondu";
@@ -210,7 +211,7 @@ const AdminFeedbackDashboard = () => {
 
   // Obtenir les types de feedback uniques pour le filtre
   const feedbackTypes = feedbacks ? 
-    Array.from(new Set(feedbacks.map((feedback: Feedback) => feedback.type))) : 
+    Array.from(new Set(feedbacks.map((feedback: Feedback) => feedback.type))) as string[] : 
     [];
 
   // Vérifier si l'utilisateur est un administrateur (github_id 145566954)
@@ -357,9 +358,11 @@ const AdminFeedbackDashboard = () => {
                     <td className="px-4 py-3">
                       <div className="flex items-center">
                         {feedback.user?.image ? (
-                          <img 
+                          <Image 
                             src={feedback.user.image} 
                             alt={feedback.user.name || "Utilisateur"} 
+                            width={32}
+                            height={32}
                             className="w-8 h-8 rounded-full mr-2" 
                           />
                         ) : (

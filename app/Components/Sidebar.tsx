@@ -5,9 +5,6 @@ import Chevron from "./images/chevron-down.svg";
 import Flash from "./images/icon(2).svg";
 import Squares from "./images/icon(3).svg";
 import Stars from "./images/icon(4).svg";
-import Figma from "./images/image 37.svg";
-import Webflow from "./images/image 26.svg";
-import OrangeDot from './images/Ellipse 3.svg';
 import Link from "next/link";
 import LeftParticles from './images/Group 194.svg';
 import RightParticles from './images/Group 191.svg';
@@ -28,19 +25,19 @@ const Sidebar = () => {
     {
       title: "🔥 Profil & Progression",
       content: [
-        <Link key="profil" href="/streak" className="text-[#7E7F81] hover:text-white cursor-pointer transition-all duration-100 py-2">🏆 Mon Streak</Link>,
-        <Link key="profil" href="/contributions" className="text-[#7E7F81] hover:text-white cursor-pointer transition-all duration-100 py-2">📊 Mes Contributions</Link>,
-        <Link key="profil" href="/badges" className="text-[#7E7F81] hover:text-white cursor-pointer transition-all duration-100 py-2">🎖️ Mes Badges</Link>
-        ],
+        { type: "link", label: "🏆 Mon Streak", href: "/streak" },
+        { type: "link", label: "📊 Mes Contributions", href: "/contributions" },
+        { type: "link", label: "🎖️ Mes Badges", href: "/badges" }
+      ],
       icon: Flash,
       link: "https://gitify.framer.website/"
     },
     {
       title: "🎯 Défis & Compétitions",
       content: [
-        <Link key="profil" href="/defis" className="text-[#7E7F81] hover:text-white cursor-pointer transition-all duration-100 py-2">⚡ Mes Défis</Link>,
-        <Link key="profil" href="/classement" className="text-[#7E7F81] hover:text-white cursor-pointer transition-all duration-100 py-2">🏅 Classement </Link>,
-        <Link key="profil" href="/evenements" className="text-[#7E7F81] hover:text-white cursor-pointer transition-all duration-100 py-2">📅 Événements</Link>,
+        { type: "link", label: "⚡ Mes Défis", href: "/defis" },
+        { type: "link", label: "🏅 Classement", href: "/classement" },
+        { type: "link", label: "📅 Événements", href: "/evenements" }
       ],
       icon: Squares,
       link: "https://gitify.framer.website/"
@@ -48,9 +45,9 @@ const Sidebar = () => {
     {
       title: "⚙️ Paramètres",
       content: [
-        <Link key="profil" href="/profil" className="text-[#7E7F81] hover:text-white cursor-pointer transition-all duration-100 py-2">👤 Mon Profil</Link>,
-        <Link key="profil" href="/integrations" className="text-[#7E7F81] hover:text-white cursor-pointer transition-all duration-100 py-2">🔄 Intégrations</Link>,
-        <Link key="profil" href="/support" className="text-[#7E7F81] hover:text-white cursor-pointer transition-all duration-100 py-2">📢 Feedback & Support</Link>
+        { type: "link", label: "👤 Mon Profil", href: "/profil" },
+        { type: "link", label: "🔄 Intégrations", href: "/integrations" },
+        { type: "link", label: "📢 Feedback & Support", href: "/support" }
       ],
       icon: Stars,
       link: "https://gitify.framer.website/"
@@ -92,66 +89,13 @@ const Sidebar = () => {
               <div className="mt-0 pl-5 text-sm rounded-md">
                 {accordion.content.map((item, itemIndex) => (
                   <div key={itemIndex} className="mb-3 last:mb-0 flex items-center gap-3">
-                    {item === "Figma" && (
-                      <>
-                        <Image
-                          src={Figma}
-                          alt="Figma"
-                          width={20}
-                          height={20}
-                          className="inline-block"
-                        />
-                        <p className="text-[#7E7F81] hover:text-white cursor-pointer transition-all duration-100">{item}</p>
-                      </>
-                    )}
-                    {item === "Webflow" && (
-                      <>
-                        <Image
-                          src={Webflow}
-                          alt="Webflow"
-                          width={20}
-                          height={20}
-                          className="inline-block"
-                        />
-                        <p className="text-white py-2">{item}</p>
-                      </>
-                    )}
-                    {item === "Hero" && (
-                      <>
-                        <Image
-                          src={OrangeDot}
-                          alt="Webflow"
-                          width={6}
-                          height={6}
-                          className="inline-block"
-                        />
-                        <p className="text-white">{item}</p>
-                      </>
-                    )}
-                    {item === "Default" && (
-                      <>
-                        <Image
-                          src={OrangeDot}
-                          alt="Webflow"
-                          width={6}
-                          height={6}
-                          className="inline-block"
-                        />
-                        <p className="text-white">{item}</p>
-                      </>
-                    )}
-                    {item === "Check out your upcoming plans and schedules." && accordion.link && (
-                      <Link
-                        href={accordion.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                    {item.type === "link" && (
+                      <Link 
+                        href={item.href} 
                         className="text-[#7E7F81] hover:text-white cursor-pointer transition-all duration-100 py-2"
                       >
-                        {item}
+                        {item.label}
                       </Link>
-                    )}
-                    {!["Figma", "Webflow", "Hero", "Default", "Check out your upcoming plans and schedules."].includes(item) && (
-                      <p className="text-[#7E7F81] hover:text-white cursor-pointer transition-all duration-100 py-2">{item}</p>
                     )}
                   </div>
                 ))}

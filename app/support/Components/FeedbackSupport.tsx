@@ -5,6 +5,7 @@ import Breadcrumb from '../../Components/breadcrumb';
 import { useSession } from "next-auth/react";
 import useSWR, { mutate } from 'swr';
 import Link from 'next/link';
+import Image from "next/image";
 
 type FeedbackType = "Suggestion" | "Bug" | "Question" | "Autre";
 type FeedbackStatus = "pending" | "En cours" | "Résolu" | "Répondu";
@@ -251,9 +252,11 @@ const FeedbackSupport = () => {
                         <div className="flex flex-wrap gap-2 justify-center">
                           {files.map((file, index) => (
                             <div key={index} className="relative w-16 h-16 rounded-md overflow-hidden">
-                              <img
+                              <Image
                                 src={URL.createObjectURL(file)}
                                 alt={`Preview ${index}`}
+                                width={64}
+                                height={64}
                                 className="w-full h-full object-cover"
                               />
                             </div>

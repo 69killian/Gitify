@@ -10,6 +10,7 @@ import RightParticles from '../../Components/images/Group 191.svg';
 import Link from 'next/link';
 import { Mail, Github, Globe, Calendar, Settings, Shield } from 'lucide-react';
 import { useSession } from 'next-auth/react';
+import defaultAvatar from '../../Components/images/profile-test.jpg';
 
 
 const Profile = () => {
@@ -27,7 +28,7 @@ const Profile = () => {
         <div className="flex flex-col items-center justify-center gap-4">
           <button className="z-1 bg-[#160E1E] h-[200px] w-[200px] rounded-full border-2 border-violet-700 overflow-hidden relative flex items-center justify-center">
             <Image
-              src={session?.user?.image} 
+              src={session?.user?.image || defaultAvatar} 
               alt="Profile" 
               layout="fill" 
               className="object-cover rounded-full"
@@ -61,7 +62,7 @@ const Profile = () => {
               </div>
               <div className="flex items-center gap-3 text-gray-400">
                 <Globe className="w-5 h-5" />
-                <span>{session?.user?.website}</span>
+                <span>{session?.user?.website || ''}</span>
               </div>
               <div className="flex items-center gap-3 text-gray-400">
                 <Calendar className="w-5 h-5" />
@@ -146,7 +147,7 @@ const Profile = () => {
                     <input
                       type="url"
                       className="w-full bg-[#0E0913] border border-violet-900/20 rounded-lg px-4 py-2 focus:ring-2 focus:ring-violet-700 outline-none transition-all duration-200"
-                      value={session?.user?.website}
+                      value={session?.user?.website || ''}
                     />
                   </div>
                 </div>
@@ -156,7 +157,7 @@ const Profile = () => {
                   </label>
                   <textarea
                     className="w-full bg-[#0E0913] border border-violet-900/20 rounded-lg px-4 py-2 h-32 focus:ring-2 focus:ring-violet-700 outline-none transition-all duration-200"
-                    value={session?.user?.bio}
+                    value={session?.user?.bio || ''}
                   />
                 </div>
                 {/* Hidden Save button for now */}

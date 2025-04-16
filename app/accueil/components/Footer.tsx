@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Github, Twitter, Linkedin, Facebook, Instagram } from "lucide-react";
+import { Github, Twitter, Linkedin } from "lucide-react";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -53,7 +53,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="#" className="text-gray-400 hover:text-indigo-300 transition-colors duration-200">
-                  Guide d'utilisation
+                  Guide d&apos;utilisation
                 </Link>
               </li>
             </ul>
@@ -92,7 +92,7 @@ export default function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link href="#" className="text-gray-400 hover:text-indigo-300 transition-colors duration-200">
-                  Conditions d'utilisation
+                  Conditions d&apos;utilisation
                 </Link>
               </li>
               <li>

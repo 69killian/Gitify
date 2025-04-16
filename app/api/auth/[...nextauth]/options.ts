@@ -184,7 +184,7 @@ export const authOptions: NextAuthOptions = {
         }
       }
 
-      session.accessToken = token.accessToken;
+      session.accessToken = token.accessToken as string | undefined;
 
       return session;
     },

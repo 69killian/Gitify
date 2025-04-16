@@ -2,6 +2,7 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
+import Image from "next/image";
 
 const testimonials = [
   {
@@ -17,7 +18,7 @@ const testimonials = [
     name: "Thomas Dubois",
     position: "Lead Developer",
     avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-    content: "En tant que lead dev, j'utilise Gitify pour motiver mon équipe. Les défis hebdomadaires ont augmenté nos contributions de 40% et amélioré la qualité de notre code. Un outil essentiel!",
+    content: "En tant que lead dev, j&apos;utilise Gitify pour motiver mon équipe. Les défis hebdomadaires ont augmenté nos contributions de 40% et amélioré la qualité de notre code. Un outil essentiel!",
     rating: 5
   },
   {
@@ -52,7 +53,7 @@ export default function Testimonials() {
             Ce que disent nos utilisateurs
           </h2>
           <p className="text-gray-300 max-w-2xl mx-auto">
-            Découvrez comment Gitify transforme l'expérience de développement de nos utilisateurs et booste leur productivité.
+            Découvrez comment Gitify transforme l&apos;expérience de développement de nos utilisateurs et booste leur productivité.
           </p>
         </div>
         
@@ -83,12 +84,14 @@ export default function Testimonials() {
                   <Quote size={48} />
                 </div>
                 
-                <p className="text-lg text-gray-300 mb-8 relative z-10">"{testimonial.content}"</p>
+                <p className="text-lg text-gray-300 mb-8 relative z-10">&quot;{testimonial.content}&quot;</p>
                 
                 <div className="mt-auto flex items-center">
-                  <img 
+                  <Image 
                     src={testimonial.avatar} 
                     alt={testimonial.name} 
+                    width={48}
+                    height={48}
                     className="w-12 h-12 rounded-full mr-4 border-2 border-indigo-500"
                   />
                   <div>

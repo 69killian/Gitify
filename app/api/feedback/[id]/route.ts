@@ -5,9 +5,9 @@ import prisma from "@/lib/prisma";
 
 // Interface pour les paramètres de route
 interface Params {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 // Fonction utilitaire pour vérifier si l'utilisateur est un administrateur
@@ -22,10 +22,11 @@ async function isUserAdmin(userId: string): Promise<boolean> {
 }
 
 // GET: Récupérer un feedback spécifique
-export async function GET(request: Request, { params }: Params) {
+export async function GET(request: Request, props: Params) {
+  const params = await props.params;
   // 1. Vérifier l'authentification
   const session = await getServerSession(authOptions);
-  
+
   if (!session || !session.user) {
     return NextResponse.json(
       { error: "Vous devez être connecté pour accéder aux feedbacks" },
@@ -98,10 +99,11 @@ export async function GET(request: Request, { params }: Params) {
 }
 
 // PATCH: Mettre à jour le statut d'un feedback
-export async function PATCH(request: Request, { params }: Params) {
+export async function PATCH(request: Request, props: Params) {
+  const params = await props.params;
   // 1. Vérifier l'authentification
   const session = await getServerSession(authOptions);
-  
+
   if (!session || !session.user) {
     return NextResponse.json(
       { error: "Vous devez être connecté pour mettre à jour un feedback" },
@@ -189,10 +191,11 @@ export async function PATCH(request: Request, { params }: Params) {
 }
 
 // DELETE: Supprimer un feedback
-export async function DELETE(request: Request, { params }: Params) {
+export async function DELETE(request: Request, props: Params) {
+  const params = await props.params;
   // 1. Vérifier l'authentification
   const session = await getServerSession(authOptions);
-  
+
   if (!session || !session.user) {
     return NextResponse.json(
       { error: "Vous devez être connecté pour supprimer un feedback" },

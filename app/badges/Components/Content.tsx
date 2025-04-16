@@ -96,7 +96,7 @@ const TrophyRoom = () => {
   };
 
   // Regrouper les badges par catégorie
-  type GroupedBadgesType = Record<string, typeof displayBadges>;
+  type GroupedBadgesType = Record<string, Array<typeof displayBadges[0]>>;
   
   const groupedBadges = displayBadges.reduce<GroupedBadgesType>((acc, userBadge) => {
     const category = userBadge.badge.category || "Non catégorisé";
@@ -106,8 +106,8 @@ const TrophyRoom = () => {
   }, {});
 
   // Déterminer la taille de l'icône en fonction de sa longueur
-  const getCurrentBadge = () => displayBadges[currentIndex]?.badge || null;
-  const iconSize = getCurrentBadge()?.icon && getCurrentBadge().icon.length > 2 ? "text-7xl" : "text-9xl";
+  const currentBadge = displayBadges[currentIndex]?.badge || null;
+  const iconSize = currentBadge?.icon?.length && currentBadge.icon.length > 2 ? "text-7xl" : "text-9xl";
   
   // Nombre total de badges débloqués
   const totalBadges = displayBadges.length;
@@ -168,14 +168,14 @@ const TrophyRoom = () => {
           >
             <BadgeButton text=" ">
               <span className={`absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center ${iconSize}`}>
-                {getCurrentBadge()?.icon}
+                {currentBadge?.icon}
               </span>
             </BadgeButton>
             <p className="mt-4 text-5xl font-extrabold gradient2 bg-clip-text drop-shadow-lg">
-              {getCurrentBadge()?.name}
+              {currentBadge?.name}
             </p>
             <p className="text-sm text-gray-300 italic relative">
-              {getCurrentBadge()?.description}
+              {currentBadge?.description}
               <span className="absolute inset-x-0 bottom-[-8px] h-[6px] bg-gradient-to-t from-black via-transparent to-transparent rounded-full shadow-lg"></span>
             </p>
           </motion.div>
