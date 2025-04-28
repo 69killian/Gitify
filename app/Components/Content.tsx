@@ -126,6 +126,16 @@ const Content = () => {
       if (!response.ok) {
         throw new Error(data.error || "Une erreur est survenue");
       }
+
+      // Si le streak n'a pas été mis à jour (déjà mis à jour aujourd'hui)
+      if (data.message === "streak_already_updated") {
+        window.showToast(
+          "⏳ Votre streak a déjà été mis à jour aujourd'hui !",
+          'info',
+          3000
+        );
+        return;
+      }
       
       // Afficher les notifications pour les badges obtenus
       if (data.awardedBadges && data.awardedBadges.length > 0) {
@@ -154,7 +164,7 @@ const Content = () => {
           (!data.completedChallenges || data.completedChallenges.length === 0)) {
         window.showToast(
           `✅ Progression mise à jour !`,
-          'info',
+          'success',
           3000
         );
       }
