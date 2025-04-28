@@ -3,11 +3,6 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]/options";
 import prisma from "@/lib/prisma";
 
-// Type pour le résultat de la requête SQL raw
-type CountResult = {
-  count: bigint;
-}
-
 export async function GET() {
   try {
     // Vérification de l'authentification
@@ -18,59 +13,8 @@ export async function GET() {
 
     const userId = session.user.id;
 
-    // Récupérer le top 3 des utilisateurs par nombre de contributions (podium)
-    const podiumUsers = await prisma.user.findMany({
-      take: 3, // Limiter aux 3 premiers résultats
-      select: {
-        id: true,
-        name: true,
-        username: true,
-        avatar_url: true,
-        image: true, // Fallback si avatar_url est null
-        streaks: {
-          where: {
-            is_active: true
-          },
-          orderBy: {
-            current_streak: "desc"
-          },
-          take: 1,
-          select: {
-            current_streak: true,
-          }
-        },
-        _count: {
-          select: {
-            contributions: true,
-            userBadges: true
-          }
-        }
-      },
-      orderBy: {
-        contributions: {
-          _count: "desc"
-        }
-      }
-    });
-
-    // Transformation des données pour le format attendu par le frontend
-    const formattedPodium = podiumUsers.map((user, index) => {
-      return {
-        rank: index + 1,
-        id: user.id,
-        name: user.name || user.username,
-        username: user.username,
-        avatar: user.avatar_url || user.image || "https://avatars.githubusercontent.com/u/583231?v=4", // Image par défaut
-        points: user._count.contributions,
-        streak: user.streaks[0]?.current_streak || 0,
-        badges: user._count.userBadges
-      };
-    });
-
-    // Obtenir les statistiques de l'utilisateur connecté
-    // 1. Récupérer les informations de l'utilisateur
-    const currentUser = await prisma.user.findUnique({
-      where: { id: userId },
+    // Récupérer tous les utilisateurs avec leurs données
+    const allUsers = await prisma.user.findMany({
       select: {
         id: true,
         name: true,
@@ -93,46 +37,76 @@ export async function GET() {
         _count: {
           select: {
             contributions: true,
-            userBadges: true
+            userBadges: true,
+            userChallenges: true
           }
         }
       }
     });
 
-    if (!currentUser) {
+    // Calculer le score pour chaque utilisateur
+    const usersWithScores = allUsers.map(user => {
+      const streak = user.streaks[0]?.current_streak || 0;
+      const points = user._count.contributions;
+      const badges = user._count.userBadges;
+      const challenges = user._count.userChallenges;
+      
+      // Même formule que dans l'API leaderboard
+      const score = (streak * 3) + points + (badges * 5) + (challenges * 2);
+      
+      return {
+        user,
+        score
+      };
+    });
+    
+    // Trier tous les utilisateurs par score
+    const sortedUsers = usersWithScores.sort((a, b) => b.score - a.score);
+    
+    // Les 3 premiers utilisateurs pour le podium
+    const top3 = sortedUsers.slice(0, 3);
+
+    // Formater les données pour le podium
+    const formattedPodium = top3.map((item, index) => {
+      const user = item.user;
+      return {
+        rank: index + 1,
+        id: user.id,
+        name: user.name || user.username,
+        username: user.username,
+        avatar: user.avatar_url || user.image || "https://avatars.githubusercontent.com/u/583231?v=4",
+        points: user._count.contributions,
+        streak: user.streaks[0]?.current_streak || 0,
+        badges: user._count.userBadges,
+        challenges: user._count.userChallenges,
+        score: item.score
+      };
+    });
+
+    // Trouver l'utilisateur courant dans la liste triée
+    const currentUserWithScore = sortedUsers.find(user => user.user.id === userId);
+    
+    if (!currentUserWithScore) {
       return NextResponse.json({ error: "Utilisateur non trouvé" }, { status: 404 });
     }
-
-    // 2. Calculer le rang de l'utilisateur en comptant tous les utilisateurs ayant plus de contributions
-    const userPoints = currentUser._count.contributions;
     
-    // Requête pour trouver combien d'utilisateurs ont plus de contributions
-    const usersWithMorePoints = await prisma.$queryRaw<CountResult[]>`
-      SELECT COUNT(*) as count
-      FROM "User" u
-      LEFT JOIN (
-        SELECT "user_id", COUNT(*) as contribution_count
-        FROM "Contribution"
-        GROUP BY "user_id"
-      ) c ON u.id = c.user_id
-      WHERE c.contribution_count > ${userPoints}
-    `;
+    // Calculer le rang de l'utilisateur (sa position dans la liste triée + 1)
+    const userRank = sortedUsers.findIndex(user => user.user.id === userId) + 1;
     
-    // Le rang est le nombre d'utilisateurs avec plus de points + 1
-    const userRank = Number(usersWithMorePoints[0].count) + 1;
-
-    // 3. Formater les statistiques de l'utilisateur
+    // Créer les statistiques de l'utilisateur
+    const user = currentUserWithScore.user;
     const userStats = {
-      id: currentUser.id,
-      username: currentUser.username,
-      name: currentUser.name || currentUser.username,
-      avatar: currentUser.avatar_url || currentUser.image || "https://avatars.githubusercontent.com/u/583231?v=4",
+      id: user.id,
+      username: user.username,
+      name: user.name || user.username,
+      avatar: user.avatar_url || user.image || "https://avatars.githubusercontent.com/u/583231?v=4",
       rank: userRank,
-      points: currentUser._count.contributions,
-      badges: currentUser._count.userBadges,
-      currentStreak: currentUser.streaks[0]?.current_streak || 0,
-      longestStreak: currentUser.streaks[0]?.longest_streak || 0,
-      // Autres statistiques pertinentes à ajouter si besoin
+      points: user._count.contributions,
+      badges: user._count.userBadges,
+      challenges: user._count.userChallenges,
+      score: currentUserWithScore.score,
+      currentStreak: user.streaks[0]?.current_streak || 0,
+      longestStreak: user.streaks[0]?.longest_streak || 0,
     };
 
     // Retourner les données combinées

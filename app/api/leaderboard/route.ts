@@ -15,7 +15,7 @@ export async function GET() {
     // Récupération des top contributeurs
     // Nous utilisons une requête pour récupérer les utilisateurs avec le compte de leurs contributions
     const topContributors = await prisma.user.findMany({
-      take: 5, // Limiter aux 5 premiers résultats
+      take: 25, // Récupérer 25 utilisateurs pour afficher un classement plus complet
       select: {
         id: true,
         name: true,
@@ -37,31 +37,49 @@ export async function GET() {
         },
         _count: {
           select: {
-            contributions: true
+            contributions: true,
+            userBadges: true,      // Compter le nombre de badges
+            userChallenges: true   // Compter le nombre de défis commencés
           }
-        }
-      },
-      orderBy: {
-        contributions: {
-          _count: "desc"
         }
       }
     });
 
-    // Transformation des données pour le format attendu par le frontend
-    const formattedContributors = topContributors.map((user, index) => {
+    // Transformation des données pour le format attendu par le frontend avec calcul d'un score composite
+    const formattedContributors = topContributors.map((user) => {
+      // Récupérer les données importantes pour le calcul du score
+      const streak = user.streaks[0]?.current_streak || 0;
+      const points = user._count.contributions;
+      const badges = user._count.userBadges;
+      const challenges = user._count.userChallenges;
+      
+      // Calculer un score composite avec pondération
+      // Formule : (streakx3) + points + (badgesx5) + (challengesx2)
+      // Ces pondérations peuvent être ajustées selon l'importance relative que vous voulez donner à chaque critère
+      const score = (streak * 3) + points + (badges * 5) + (challenges * 2);
+      
       return {
-        rank: index + 1,
         id: user.id,
         name: user.name || user.username,
         username: user.username,
         avatar: user.avatar_url || user.image || "https://avatars.githubusercontent.com/u/583231?v=4", // Image par défaut si aucune n'est disponible
-        points: user._count.contributions,
-        streak: user.streaks[0]?.current_streak || 0
+        points: points,
+        streak: streak,
+        badges: badges,
+        challenges: challenges,
+        score: score
       };
     });
 
-    return NextResponse.json(formattedContributors);
+    // Trier les utilisateurs par score et assigner les rangs
+    const rankedContributors = formattedContributors
+      .sort((a, b) => b.score - a.score)
+      .map((user, index) => ({
+        ...user,
+        rank: index + 1
+      }));
+
+    return NextResponse.json(rankedContributors);
   } catch (error) {
     console.error("Erreur lors de la récupération du leaderboard:", error);
     return NextResponse.json(
