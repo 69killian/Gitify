@@ -1,8 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useSession } from "next-auth/react";
 import useSWR from "swr";
+import Tooltip from "../../components/ui/tooltip";
 
 // Types pour organiser les données
 type ContributionDay = {
@@ -40,6 +41,11 @@ const GitHubCalendar = () => {
     fetcher
   );
 
+  // États pour le tooltip
+  const [tooltipVisible, setTooltipVisible] = useState(false);
+  const [tooltipContent, setTooltipContent] = useState<React.ReactNode>(null);
+  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+
   // Les données transformées du calendrier
   const contributionData = data?.data?.viewer?.contributionsCollection?.contributionCalendar;
 
@@ -55,6 +61,27 @@ const GitHubCalendar = () => {
         weekday: day.weekday
       }))
     );
+  };
+
+  // Gestionnaires d'événements pour le tooltip
+  const handleMouseEnter = (day: ProcessedDay) => {
+    const date = new Date(day.date).toLocaleDateString();
+    const content = (
+      <div>
+        <p><strong>Date:</strong> {date}</p>
+        <p><strong>Contributions:</strong> {day.count}</p>
+      </div>
+    );
+    setTooltipContent(content);
+    setTooltipVisible(true);
+  };
+
+  const handleMouseMove = (event: React.MouseEvent) => {
+    setTooltipPosition({ x: event.clientX, y: event.clientY });
+  };
+
+  const handleMouseLeave = () => {
+    setTooltipVisible(false);
   };
 
   // Affichage pendant le chargement
@@ -81,7 +108,7 @@ const GitHubCalendar = () => {
   const reversedCells = [...contributionCells].reverse();
 
   return (
-    <div className="bg-[#241730] transition-all duration-200 w-full h-[250px] rounded-[6px] border border-1 border-[#292929] flex justify-center items-center overflow-hidden">
+    <div className="bg-[#241730] transition-all duration-200 w-full h-[250px] rounded-[6px] border border-1 border-[#292929] flex justify-center items-center overflow-hidden relative">
       {/* Conteneur avec défilement horizontal uniquement */}
       <div className="overflow-x-auto overflow-y-hidden h-[250px] w-full flex items-center pl-5">
         {/* Conteneur fixe pour la grille */}
@@ -89,14 +116,25 @@ const GitHubCalendar = () => {
           {reversedCells.map((day: ProcessedDay, index: number) => (
             <div
               key={index}
-              title={`${new Date(day.date).toLocaleDateString()} - ${day.count} contributions`}
+              aria-label={`${new Date(day.date).toLocaleDateString()} - ${day.count} contributions`}
               className={`w-[25px] h-[25px] ${
                 getColorClass(day.count)
               } rounded-md hover:scale-110 transition-transform cursor-pointer`}
+              onMouseEnter={() => handleMouseEnter(day)}
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
             ></div>
           ))}
         </div>
       </div>
+      
+      {/* Tooltip qui suit la souris */}
+      <Tooltip 
+        content={tooltipContent} 
+        visible={tooltipVisible} 
+        x={tooltipPosition.x} 
+        y={tooltipPosition.y} 
+      />
     </div>
   );
 };
