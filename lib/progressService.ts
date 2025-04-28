@@ -6,18 +6,37 @@ import { Streak, Badge, Challenge } from "@prisma/client";
  * @param userId ID de l'utilisateur
  * @returns Le streak mis à jour ou créé
  */
-export async function updateUserStreak(userId: string): Promise<Streak> {
-  // Récupérer le dernier streak de l'utilisateur
-  const latestStreak = await prisma.streak.findFirst({
-    where: { user_id: userId, is_active: true },
-    orderBy: { created_at: "desc" },
-  });
-
+export async function updateUserStreak(userId: string): Promise<Streak | { message: string }> {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
+
+  // Récupérer le dernier streak de l'utilisateur
+  const latestStreak = await prisma.streak.findFirst({
+    where: { 
+      user_id: userId, 
+      is_active: true,
+      // Vérifier si le streak a déjà été mis à jour aujourd'hui
+      updated_at: {
+        gte: today,
+        lt: new Date(today.getTime() + 24 * 60 * 60 * 1000)
+      }
+    },
+    orderBy: { created_at: "desc" },
+  });
+
+  // Si le streak a déjà été mis à jour aujourd'hui, retourner un message
+  if (latestStreak) {
+    return { message: "streak_already_updated" };
+  }
+
+  // Récupérer le dernier streak actif (sans la contrainte de date)
+  const currentStreak = await prisma.streak.findFirst({
+    where: { user_id: userId, is_active: true },
+    orderBy: { created_at: "desc" },
+  });
 
   // Récupérer la dernière contribution de l'utilisateur
   const latestContribution = await prisma.contribution.findFirst({
@@ -26,7 +45,7 @@ export async function updateUserStreak(userId: string): Promise<Streak> {
   });
 
   // Si aucun streak n'existe, en créer un nouveau
-  if (!latestStreak) {
+  if (!currentStreak) {
     return prisma.streak.create({
       data: {
         user_id: userId,
@@ -38,18 +57,28 @@ export async function updateUserStreak(userId: string): Promise<Streak> {
     });
   }
 
-  // Si la dernière contribution date d'aujourd'hui, le streak est déjà à jour
+  // Si la dernière contribution date d'aujourd'hui, on incrémente le streak
   if (latestContribution && new Date(latestContribution.date).setHours(0, 0, 0, 0) === today.getTime()) {
-    return latestStreak;
+    const updatedStreak = currentStreak.current_streak + 1;
+    const newLongestStreak = Math.max(updatedStreak, currentStreak.longest_streak);
+
+    return prisma.streak.update({
+      where: { id: currentStreak.id },
+      data: {
+        current_streak: updatedStreak,
+        longest_streak: newLongestStreak,
+        updated_at: new Date(),
+      },
+    });
   }
 
   // Si la dernière contribution date d'hier, on incrémente le streak
   if (latestContribution && new Date(latestContribution.date).setHours(0, 0, 0, 0) === yesterday.getTime()) {
-    const updatedStreak = latestStreak.current_streak + 1;
-    const newLongestStreak = Math.max(updatedStreak, latestStreak.longest_streak);
+    const updatedStreak = currentStreak.current_streak + 1;
+    const newLongestStreak = Math.max(updatedStreak, currentStreak.longest_streak);
 
     return prisma.streak.update({
-      where: { id: latestStreak.id },
+      where: { id: currentStreak.id },
       data: {
         current_streak: updatedStreak,
         longest_streak: newLongestStreak,
@@ -60,7 +89,7 @@ export async function updateUserStreak(userId: string): Promise<Streak> {
 
   // Si la dernière contribution date d'avant-hier ou plus, on crée un nouveau streak
   return prisma.streak.update({
-    where: { id: latestStreak.id },
+    where: { id: currentStreak.id },
     data: {
       is_active: false,
       end_date: yesterday,
@@ -72,7 +101,7 @@ export async function updateUserStreak(userId: string): Promise<Streak> {
         user_id: userId,
         start_date: today,
         current_streak: 1,
-        longest_streak: latestStreak.longest_streak,
+        longest_streak: currentStreak.longest_streak,
         is_active: true,
       },
     });

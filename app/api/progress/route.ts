@@ -23,14 +23,21 @@ export async function POST() {
     const userId = session.user.id;
 
     // Mettre à jour le streak de l'utilisateur
-    const updatedStreak = await updateUserStreak(userId);
+    const streakResult = await updateUserStreak(userId);
+
+    // Si le streak n'a pas été mis à jour (déjà mis à jour aujourd'hui)
+    if ('message' in streakResult && streakResult.message === "streak_already_updated") {
+      return NextResponse.json({
+        message: "streak_already_updated"
+      });
+    }
 
     // Vérifier et mettre à jour la progression des challenges
     const { completedChallenges, awardedBadges } = await updateUserProgress(userId);
 
     // Retourner les informations actualisées
     return NextResponse.json({
-      newStreak: updatedStreak,
+      newStreak: streakResult,
       completedChallenges,
       awardedBadges
     });

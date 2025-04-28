@@ -3,11 +3,6 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]/options";
 import prisma from "@/lib/prisma";
 
-// Type pour le résultat de la requête SQL raw
-type CountResult = {
-  count: bigint;
-}
-
 export async function GET() {
   try {
     // Vérification de l'authentification
