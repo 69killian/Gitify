@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useSession } from "next-auth/react";
 import useSWR from "swr";
 import Tooltip from "../../components/ui/tooltip";
+import SkeletonLoader from "../../components/ui/skeletonLoader";
 
 // Types pour organiser les données
 type ContributionDay = {
@@ -86,11 +87,7 @@ const GitHubCalendar = () => {
 
   // Affichage pendant le chargement
   if (isLoading) {
-    return (
-      <div className="bg-[#241730] transition-all overflow-hidden duration-200 w-full h-[250px] rounded-[6px] border border-1 border-[#292929] flex justify-center items-center">
-        <p className="text-white">Chargement de vos contributions...</p>
-      </div>
-    );
+    return <SkeletonLoader rows={7} cols={120} />;
   }
 
   // Affichage en cas d'erreur
