@@ -67,55 +67,6 @@ interface ProgressDataType {
   userBadges: UserBadgeType[];
 }
 
-// Données statiques pour le fallback
-const staticBadges: UserBadgeType[] = [
-  { 
-    id: 1, 
-    user_id: "static-user", 
-    badge_id: 1, 
-    unlocked_at: new Date().toISOString(), 
-    badge: { 
-      id: 1, 
-      name: "Streak Newbie", 
-      description: "Premier streak atteint", 
-      condition: "3 jours de streak", 
-      icon: "🔥", 
-      category: "🔥 Streaks", 
-      created_at: new Date() 
-    } 
-  },
-  { 
-    id: 2, 
-    user_id: "static-user", 
-    badge_id: 2, 
-    unlocked_at: new Date().toISOString(), 
-    badge: { 
-      id: 2, 
-      name: "Streak Enthusiast", 
-      description: "Tu commences à être sérieux", 
-      condition: "7 jours de streak", 
-      icon: "🔥🔥", 
-      category: "🔥 Streaks", 
-      created_at: new Date() 
-    } 
-  },
-  { 
-    id: 3, 
-    user_id: "static-user", 
-    badge_id: 3, 
-    unlocked_at: new Date().toISOString(), 
-    badge: { 
-      id: 3, 
-      name: "Streak Warrior", 
-      description: "La régularité paie !", 
-      condition: "15 jours de streak", 
-      icon: "⚔️🔥", 
-      category: "🔥 Streaks", 
-      created_at: new Date() 
-    } 
-  },
-];
-
 // Fonction pour récupérer les données
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -136,7 +87,7 @@ const Content = () => {
   // Si aucun badge n'est chargé, utiliser les badges statiques pour la démo
   const displayBadges = !isLoadingBadges && !error && userBadges && userBadges.length > 0 
     ? userBadges 
-    : staticBadges;
+    : [];
 
   // Regrouper les badges par catégorie
   type GroupedBadgesType = Record<string, UserBadgeType[]>;
@@ -149,7 +100,7 @@ const Content = () => {
   }, {});
 
   // Nombre total de badges débloqués réels
-  const totalBadges = userBadges?.length || displayBadges.length;
+  const totalBadges = userBadges?.length || 0;
   
   // Statistiques de progression
   const currentStreak = progressData?.streak?.current_streak || 0;
@@ -357,10 +308,13 @@ const Content = () => {
               </div>
             </div>
           ) : (
-            // Afficher les badges réels
+            // Afficher les badges réels ou le message si aucun badge
             <>
               {Object.keys(groupedBadges).length === 0 ? (
-                <p className="text-center text-gray-400 py-10">Aucun badge débloqué pour le moment</p>
+                <div className="text-center py-10">
+                  <p className="text-gray-400 mb-4">Vous n&apos;avez pas encore de badges</p>
+                  <p className="text-violet-400 text-sm">Commencez à relever des défis pour débloquer vos premiers badges !</p>
+                </div>
               ) : (
                 <div className="space-y-10">
                   {Object.entries(groupedBadges).map(([category, badges]) => (
