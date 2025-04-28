@@ -9,15 +9,19 @@ import LeftParticles from '../../Components/images/Group 194.svg';
 import RightParticles from '../../Components/images/Group 191.svg';
 import useSWR, { mutate } from 'swr';
 import { useSession } from 'next-auth/react';
+import SkeletonLoader from '../../../components/ui/skeletonLoader';
 
 // Fonction pour récupérer les données
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const StreakPage = () => {
-  const { data: session } = useSession();
+  const { data: session, status: sessionStatus } = useSession();
   const [isUpdatingProgress, setIsUpdatingProgress] = useState(false);
-  const { data: progressData } = useSWR(session ? '/api/progress' : null, fetcher);
-  const { data: contributionsData } = useSWR(session ? '/api/contributions' : null, fetcher);
+  const { data: progressData, isLoading: isLoadingProgress } = useSWR(session ? '/api/progress' : null, fetcher);
+  const { data: contributionsData, isLoading: isLoadingContributions } = useSWR(session ? '/api/contributions' : null, fetcher);
+
+  // Déterminer si les données sont en cours de chargement
+  const isLoading = isLoadingProgress || isLoadingContributions || sessionStatus === "loading";
 
   // Si les données ne sont pas encore chargées, utiliser des données statiques
   const user = progressData ? {
@@ -112,7 +116,9 @@ const StreakPage = () => {
     <section className="px-4 md:px-8">
       <div className="flex flex-col items-center gap-6 py-8">
       <button className="z-1 bg-[#160E1E] h-[200px] w-[200px] rounded-full border-2 border-violet-700 overflow-hidden relative flex items-center justify-center">
-        {typeof user.avatarUrl === 'string' ? (
+        {isLoading ? (
+          <div className="h-[200px] w-[200px] rounded-full bg-[#321A47] animate-pulse" />
+        ) : typeof user.avatarUrl === 'string' ? (
           <Image
             src={user.avatarUrl}
             alt="User Avatar"
@@ -129,7 +135,13 @@ const StreakPage = () => {
         )}
       </button>
         <div className="text-center">
-          <h1 className="text-4xl font-bold flex items-center justify-center gradient">{user.username}</h1>
+          <h1 className="text-4xl font-bold flex items-center justify-center gradient">
+            {isLoading ? (
+              <SkeletonLoader variant="text" width="200px" height="40px" />
+            ) : (
+              user.username
+            )}
+          </h1>
           <p className="text-gray-400">Continue ta streak et débloque des récompenses exclusives !</p>
           
           {/* Bouton de mise à jour de la progression */}
@@ -153,7 +165,7 @@ const StreakPage = () => {
             ) : (
               <>
                 <RefreshCw className="mr-2 h-4 w-4" />
-                Mettre à jour ma streak
+                Mettre à jour mon streak
               </>
             )}
           </button>
@@ -162,70 +174,139 @@ const StreakPage = () => {
 
       {/* Streak Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
-        <StatCard icon={<Flame size={40} />} title="Streak Actuelle" value={user.streakDays} />
-        <StatCard icon={<CalendarDays size={40} />} title="Record de Streak" value={user.recordStreak} />
-        <StatCard icon={<Activity size={40} />} title="Total de Commits" value={user.totalCommits} />
-        <StatCard icon={<Medal size={40} />} title="Badges Débloqués" value={user.badgesUnlocked} />
+        {isLoading ? (
+          <>
+            <SkeletonLoader variant="stat" />
+            <SkeletonLoader variant="stat" />
+            <SkeletonLoader variant="stat" />
+            <SkeletonLoader variant="stat" />
+          </>
+        ) : (
+          <>
+            <StatCard icon={<Flame size={40} />} title="Streak Actuelle" value={user.streakDays} />
+            <StatCard icon={<CalendarDays size={40} />} title="Record de Streak" value={user.recordStreak} />
+            <StatCard icon={<Activity size={40} />} title="Total de Commits" value={user.totalCommits} />
+            <StatCard icon={<Medal size={40} />} title="Badges Débloqués" value={user.badgesUnlocked} />
+          </>
+        )}
       </div>
 
-      {/* GitHub Calendar HIDDEN AND STATIC */}
+      {/* GitHub Calendar */}
       <div className="mt-6">
         <h2 className="text-2xl font-semibold mb-4">Tes contributions récentes</h2>
         <GitHubCalendar />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-10">
-  {/* Carte Objectifs */}
-  <div className="relative z-10 py-3 px-6 bg-[#1B1B1B] text-center transition-colors duration-300 rounded-[8px] shadow-md shadow-[#101010] border-t-2 border-gray-300/10 w-full h-auto rounded-[6px] border border-[#292929] text-[16px] flex flex-col justify-start items-start gap-4 p-4">
-    <h2 className="text-xl font-semibold">Prochains objectifs</h2>
-    <div className="space-y-4 w-full">
-      {[
-        { name: 'Streak de 5 jours', progress: 80 },
-        { name: 'Streak de 10 jours', progress: 50 },
-        { name: 'Streak de 30 jours', progress: 20 },
-      ].map((goal) => (
-        <div key={goal.name} className="w-full">
-          <div className="flex justify-between mb-2 text-sm">
-            <span className="text-gray-400">{goal.name}</span>
-            <span className="text-violet-400">{goal.progress}%</span>
-          </div>
-          <div className="h-2 bg-violet-900/20 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-violet-500 rounded-full"
-              style={{ width: `${goal.progress}%` }}
-            />
+        {/* Carte Objectifs */}
+        <div className="relative z-10 py-3 px-6 bg-[#1B1B1B] text-center transition-colors duration-300 rounded-[8px] shadow-md shadow-[#101010] border-t-2 border-gray-300/10 w-full h-auto rounded-[6px] border border-[#292929] text-[16px] flex flex-col justify-start items-start gap-4 p-4">
+          <h2 className="text-xl font-semibold">Prochains objectifs</h2>
+          <div className="space-y-4 w-full">
+            {isLoading ? (
+              <>
+                <div className="w-full">
+                  <div className="flex justify-between mb-2 text-sm">
+                    <SkeletonLoader variant="text" width="120px" height="16px" />
+                    <SkeletonLoader variant="text" width="40px" height="16px" />
+                  </div>
+                  <div className="h-2 bg-violet-900/20 rounded-full overflow-hidden">
+                    <div className="h-full bg-[#321A47] animate-pulse rounded-full" style={{ width: '50%' }} />
+                  </div>
+                </div>
+                <div className="w-full">
+                  <div className="flex justify-between mb-2 text-sm">
+                    <SkeletonLoader variant="text" width="120px" height="16px" />
+                    <SkeletonLoader variant="text" width="40px" height="16px" />
+                  </div>
+                  <div className="h-2 bg-violet-900/20 rounded-full overflow-hidden">
+                    <div className="h-full bg-[#321A47] animate-pulse rounded-full" style={{ width: '30%' }} />
+                  </div>
+                </div>
+                <div className="w-full">
+                  <div className="flex justify-between mb-2 text-sm">
+                    <SkeletonLoader variant="text" width="120px" height="16px" />
+                    <SkeletonLoader variant="text" width="40px" height="16px" />
+                  </div>
+                  <div className="h-2 bg-violet-900/20 rounded-full overflow-hidden">
+                    <div className="h-full bg-[#321A47] animate-pulse rounded-full" style={{ width: '20%' }} />
+                  </div>
+                </div>
+              </>
+            ) : (
+              [
+                { name: 'Streak de 5 jours', progress: 80 },
+                { name: 'Streak de 10 jours', progress: 50 },
+                { name: 'Streak de 30 jours', progress: 20 },
+              ].map((goal) => (
+                <div key={goal.name} className="w-full">
+                  <div className="flex justify-between mb-2 text-sm">
+                    <span className="text-gray-400">{goal.name}</span>
+                    <span className="text-violet-400">{goal.progress}%</span>
+                  </div>
+                  <div className="h-2 bg-violet-900/20 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-violet-500 rounded-full"
+                      style={{ width: `${goal.progress}%` }}
+                    />
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
-      ))}
-    </div>
-  </div>
 
-  {/* Carte Historique */}
-  <div className="relative z-10 py-3 px-6 bg-[#1B1B1B] text-center transition-colors duration-300 rounded-[8px] shadow-md shadow-[#101010] border-t-2 border-gray-300/10 w-full h-auto rounded-[6px] border border-[#292929] text-[16px] flex flex-col justify-start items-start gap-4 p-4">
-    <h2 className="text-xl font-semibold">Historique des streaks</h2>
-    <div className="space-y-4 w-full">
-      {[
-        { date: '2024-03-15', days: 365, status: 'En cours' },
-        { date: '2023-12-31', days: 180, status: 'Terminé' },
-        { date: '2023-06-15', days: 90, status: 'Terminé' },
-      ].map((streak) => (
-        <div key={streak.date} className="flex items-center justify-between w-full">
-          <div className="text-left">
-            <div className="text-sm">{streak.date}</div>
-            <div className="text-sm text-gray-400">{streak.days} jours</div>
-          </div>
-          <div className={`px-2 py-1 rounded-full text-xs ${
-            streak.status === 'En cours' 
-              ? 'bg-violet-500/20 text-violet-400' 
-              : 'bg-gray-500/20 text-gray-400'
-          }`}>
-            {streak.status}
+        {/* Carte Historique */}
+        <div className="relative z-10 py-3 px-6 bg-[#1B1B1B] text-center transition-colors duration-300 rounded-[8px] shadow-md shadow-[#101010] border-t-2 border-gray-300/10 w-full h-auto rounded-[6px] border border-[#292929] text-[16px] flex flex-col justify-start items-start gap-4 p-4">
+          <h2 className="text-xl font-semibold">Historique des streaks</h2>
+          <div className="space-y-4 w-full">
+            {isLoading ? (
+              <>
+                <div className="flex items-center justify-between w-full">
+                  <div className="text-left">
+                    <SkeletonLoader variant="text" width="100px" height="16px" />
+                    <SkeletonLoader variant="text" width="60px" height="14px" />
+                  </div>
+                  <SkeletonLoader variant="text" width="60px" height="20px" />
+                </div>
+                <div className="flex items-center justify-between w-full">
+                  <div className="text-left">
+                    <SkeletonLoader variant="text" width="100px" height="16px" />
+                    <SkeletonLoader variant="text" width="60px" height="14px" />
+                  </div>
+                  <SkeletonLoader variant="text" width="60px" height="20px" />
+                </div>
+                <div className="flex items-center justify-between w-full">
+                  <div className="text-left">
+                    <SkeletonLoader variant="text" width="100px" height="16px" />
+                    <SkeletonLoader variant="text" width="60px" height="14px" />
+                  </div>
+                  <SkeletonLoader variant="text" width="60px" height="20px" />
+                </div>
+              </>
+            ) : (
+              [
+                { date: '2024-03-15', days: 365, status: 'En cours' },
+                { date: '2023-12-31', days: 180, status: 'Terminé' },
+                { date: '2023-06-15', days: 90, status: 'Terminé' },
+              ].map((streak) => (
+                <div key={streak.date} className="flex items-center justify-between w-full">
+                  <div className="text-left">
+                    <div className="text-sm">{streak.date}</div>
+                    <div className="text-sm text-gray-400">{streak.days} jours</div>
+                  </div>
+                  <div className={`px-2 py-1 rounded-full text-xs ${
+                    streak.status === 'En cours' 
+                      ? 'bg-violet-500/20 text-violet-400' 
+                      : 'bg-gray-500/20 text-gray-400'
+                  }`}>
+                    {streak.status}
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
-      ))}
-    </div>
-  </div>
-</div>
+      </div>
 
 
       {/* Call to Action */}

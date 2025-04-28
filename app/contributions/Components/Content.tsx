@@ -9,6 +9,7 @@ import LeftParticles from '../../Components/images/Group 194.svg';
 import RightParticles from '../../Components/images/Group 191.svg';
 import { useSession } from 'next-auth/react';
 import useSWR, { mutate } from 'swr';
+import SkeletonLoader from '../../../components/ui/skeletonLoader';
 
 // Interfaces
 interface Contribution {
@@ -40,7 +41,7 @@ const formatRelativeTime = (date: string) => {
 };
 
 const StreakPage = () => {
-  const { data: session } = useSession();
+  const { data: session, status: sessionStatus } = useSession();
   const { data, error, isLoading } = useSWR('/api/contributions', fetcher);
   const [syncing, setSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
@@ -112,19 +113,31 @@ const StreakPage = () => {
     topRepositories: []
   };
 
+  const loadingOrSessionLoading = isLoading || sessionStatus === "loading";
+
   return (
     <section className="px-4 md:px-8">
       <div className="flex flex-col items-center gap-6 py-8">
         <button className="z-1 bg-[#160E1E] h-[200px] w-[200px] rounded-full border-2 border-violet-700 overflow-hidden relative flex items-center justify-center">
-          <Image
-            src={typeof session?.user?.image === 'string' ? session.user.image : fallbackUser.avatarUrl}
-            alt="User Avatar"
-            width={200}
-            height={200}
-          />
+          {loadingOrSessionLoading ? (
+            <div className="h-[200px] w-[200px] rounded-full bg-[#321A47] animate-pulse" />
+          ) : (
+            <Image
+              src={typeof session?.user?.image === 'string' ? session.user.image : fallbackUser.avatarUrl}
+              alt="User Avatar"
+              width={200}
+              height={200}
+            />
+          )}
         </button>
         <div>
-          <h1 className="text-4xl font-bold flex items-center justify-center gradient">{session?.user?.name || fallbackUser.username}</h1>
+          <h1 className="text-4xl font-bold flex items-center justify-center gradient">
+            {loadingOrSessionLoading ? (
+              <SkeletonLoader variant="text" width="200px" height="40px" />
+            ) : (
+              session?.user?.name || fallbackUser.username
+            )}
+          </h1>
           <p className="text-gray-400">Continue à contribuer et débloque des récompenses exclusives !</p>
         </div>
         
@@ -132,10 +145,12 @@ const StreakPage = () => {
         <div className="mt-2 flex flex-col items-center">
           <button
             onClick={syncGitHubContributions}
-            disabled={syncing}
-            className={`flex items-center gap-2 px-4 py-2 rounded-md ${syncing 
-              ? 'bg-gray-600 cursor-not-allowed' 
-              : 'bg-violet-600 hover:bg-violet-700'}`}
+            disabled={syncing || loadingOrSessionLoading}
+            className={`flex items-center gap-2 px-4 py-2 rounded-md ${
+              syncing || loadingOrSessionLoading
+                ? 'bg-gray-600 cursor-not-allowed' 
+                : 'bg-violet-600 hover:bg-violet-700'
+            }`}
           >
             <RefreshCw className={`w-5 h-5 ${syncing ? 'animate-spin' : ''}`} />
             {syncing ? 'Synchronisation...' : 'Synchroniser avec GitHub'}
@@ -149,12 +164,12 @@ const StreakPage = () => {
       </div>
 
       {/* Affichage des statistiques */}
-      {isLoading ? (
+      {loadingOrSessionLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
-          <StatCard icon={<Activity size={40} />} title="Total de Commits" value={0} isLoading={true} />
-          <StatCard icon={<GitPullRequest size={40} />} title="Pull requests" value={0} isLoading={true} />
-          <StatCard icon={<GitMerge size={40} />} title="Merges" value={0} isLoading={true} />
-          <StatCard icon={<Folder size={40} />} title="Repositories" value={0} isLoading={true} />
+          <SkeletonLoader variant="stat" />
+          <SkeletonLoader variant="stat" />
+          <SkeletonLoader variant="stat" />
+          <SkeletonLoader variant="stat" />
         </div>
       ) : error ? (
         <div className="text-red-500 text-center p-4 bg-red-100/10 rounded-lg">
@@ -180,8 +195,19 @@ const StreakPage = () => {
         <div className="relative z-10 py-3 px-6 bg-[#1B1B1B] text-center transition-colors duration-300 rounded-[8px] shadow-md shadow-[#101010] border-t-2 border-gray-300/10 w-full h-auto rounded-[6px] border border-[#292929] text-[16px] flex flex-col justify-start items-start gap-4 p-4">
           <h2 className="text-xl font-semibold">Dernières contributions</h2>
           <div className="space-y-4 w-full">
-            {isLoading ? (
-              <div className="text-center w-full p-4 text-gray-400">Chargement des contributions...</div>
+            {loadingOrSessionLoading ? (
+              <>
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <div key={index} className="flex items-start gap-4">
+                    <SkeletonLoader variant="text" width="32px" height="32px" />
+                    <div className="flex-1">
+                      <SkeletonLoader variant="text" width="150px" height="16px" />
+                      <SkeletonLoader variant="text" width="180px" height="14px" />
+                      <SkeletonLoader variant="text" width="60px" height="12px" />
+                    </div>
+                  </div>
+                ))}
+              </>
             ) : error ? (
               <div className="text-center w-full p-4 text-red-400">Impossible de charger les contributions</div>
             ) : statsData.lastContributions.length === 0 ? (
@@ -215,8 +241,20 @@ const StreakPage = () => {
         <div className="relative z-10 py-3 px-6 bg-[#1B1B1B] text-center transition-colors duration-300 rounded-[8px] shadow-md shadow-[#101010] border-t-2 border-gray-300/10 w-full h-auto rounded-[6px] border border-[#292929] text-[16px] flex flex-col justify-start items-start gap-4 p-4">
           <h2 className="text-xl font-semibold">Top repositories</h2>
           <div className="space-y-4 w-full">
-            {isLoading ? (
-              <div className="text-center w-full p-4 text-gray-400">Chargement des repositories...</div>
+            {loadingOrSessionLoading ? (
+              <>
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <div key={index} className="flex items-center justify-between w-full">
+                    <div>
+                      <SkeletonLoader variant="text" width="120px" height="16px" />
+                      <SkeletonLoader variant="text" width="80px" height="14px" />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <SkeletonLoader variant="text" width="40px" height="20px" />
+                    </div>
+                  </div>
+                ))}
+              </>
             ) : error ? (
               <div className="text-center w-full p-4 text-red-400">Impossible de charger les repositories</div>
             ) : statsData.topRepositories.length === 0 ? (

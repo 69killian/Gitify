@@ -11,12 +11,12 @@ import Link from 'next/link';
 import { Mail, Github, Globe, Calendar, Settings, Shield } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import defaultAvatar from '../../Components/images/profile-test.jpg';
+import SkeletonLoader from '../../../components/ui/skeletonLoader';
 
 
 const Profile = () => {
-  const { data: session } = useSession();
-
-
+  const { data: session, status } = useSession();
+  const isLoading = status === "loading";
 
   return (
     <section className="px-4 md:px-8">
@@ -26,18 +26,41 @@ const Profile = () => {
 
         {/* Profile Section */}
         <div className="flex flex-col items-center justify-center gap-4">
-          <button className="z-1 bg-[#160E1E] h-[200px] w-[200px] rounded-full border-2 border-violet-700 overflow-hidden relative flex items-center justify-center">
-            <Image
-              src={session?.user?.image || defaultAvatar} 
-              alt="Profile" 
-              layout="fill" 
-              className="object-cover rounded-full"
-            />
-          </button>
-          <div className="text-[25px] text-white text-center flex items-center relative group">{session?.user?.name}<PenLine className='right-[-30px] absolute hidden group-hover:block'/></div>
-          <div className='flex items-center'>
-            <Paperclip height={15}/> {session?.user?.github_id}
-          </div>
+          {isLoading ? (
+            // Skeleton pour la photo de profil
+            <div className="z-1 bg-[#241730] h-[200px] w-[200px] rounded-full border-2 border-violet-700 overflow-hidden relative flex items-center justify-center">
+              <div className="w-[196px] h-[196px] bg-[#321A47] animate-pulse rounded-full"></div>
+            </div>
+          ) : (
+            <button className="z-1 bg-[#160E1E] h-[200px] w-[200px] rounded-full border-2 border-violet-700 overflow-hidden relative flex items-center justify-center">
+              <Image
+                src={session?.user?.image || defaultAvatar} 
+                alt="Profile" 
+                layout="fill" 
+                className="object-cover rounded-full"
+              />
+            </button>
+          )}
+          
+          {isLoading ? (
+            // Skeleton pour le nom d'utilisateur
+            <div className="flex items-center">
+              <SkeletonLoader variant="text" width="150px" height="30px" />
+            </div>
+          ) : (
+            <div className="text-[25px] text-white text-center flex items-center relative group">{session?.user?.name}<PenLine className='right-[-30px] absolute hidden group-hover:block'/></div>
+          )}
+          
+          {isLoading ? (
+            // Skeleton pour l'identifiant GitHub
+            <div className="flex items-center">
+              <SkeletonLoader variant="text" width="120px" height="15px" />
+            </div>
+          ) : (
+            <div className='flex items-center'>
+              <Paperclip height={15}/> {session?.user?.github_id}
+            </div>
+          )}
 
           {/* Hidden Change Photo button for now */}
           <button className="hidden text-[13.49px] my-2 text-white cursor-pointer bg-violet-800 hover:bg-violet-600 transition-all duration-200 w-[165px] h-[42px] border border-1 border-violet-500 text-[12px] flex justify-center items-center">
@@ -52,30 +75,54 @@ const Profile = () => {
           <div className="card mb-6">
             <h3 className="text-lg font-semibold mb-4">Informations</h3>
             <div className="space-y-4">
-              <div className="flex items-center gap-3 text-gray-400">
-                <Mail className="w-5 h-5" />
-                <span>{session?.user?.email}</span>
-              </div>
-              <div className="flex items-center gap-3 text-gray-400">
-                <Github className="w-5 h-5" />
-                <span>@{session?.user?.name}</span>
-              </div>
-              <div className="flex items-center gap-3 text-gray-400">
-                <Globe className="w-5 h-5" />
-                <span>{session?.user?.website || ''}</span>
-              </div>
-              <div className="flex items-center gap-3 text-gray-400">
-                <Calendar className="w-5 h-5" />
-                <span> Membre depuis le&nbsp;
-                {session?.user?.created_at 
-                  ? new Date(session.user.created_at).toLocaleDateString('fr-FR', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })
-                  : ''}
-              </span>
-              </div>
+              {isLoading ? (
+                // Skeletons pour les informations
+                <>
+                  <div className="flex items-center gap-3">
+                    <Mail className="w-5 h-5 text-gray-500" />
+                    <SkeletonLoader variant="text" width="180px" height="16px" />
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Github className="w-5 h-5 text-gray-500" />
+                    <SkeletonLoader variant="text" width="150px" height="16px" />
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Globe className="w-5 h-5 text-gray-500" />
+                    <SkeletonLoader variant="text" width="200px" height="16px" />
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Calendar className="w-5 h-5 text-gray-500" />
+                    <SkeletonLoader variant="text" width="220px" height="16px" />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-center gap-3 text-gray-400">
+                    <Mail className="w-5 h-5" />
+                    <span>{session?.user?.email}</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-gray-400">
+                    <Github className="w-5 h-5" />
+                    <span>@{session?.user?.name}</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-gray-400">
+                    <Globe className="w-5 h-5" />
+                    <span>{session?.user?.website || ''}</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-gray-400">
+                    <Calendar className="w-5 h-5" />
+                    <span> Membre depuis le&nbsp;
+                    {session?.user?.created_at 
+                      ? new Date(session.user.created_at).toLocaleDateString('fr-FR', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })
+                      : ''}
+                  </span>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -117,48 +164,64 @@ const Profile = () => {
           {/* Edit Profile Form */}
           <div className="lg:col-span-2">
             <div className="card mb-6">
-              <h3 className="text-lg  mb-4">Visualisez votre profil GitHub</h3>
+              <h3 className="text-lg mb-4">Visualisez votre profil GitHub</h3>
               <form className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm text-gray-400 mb-1">
                       Nom d&rsquo;utilisateur
                     </label>
-                    <input
-                      type="text"
-                      className="w-full bg-[#0E0913] border border-violet-900/20 rounded-lg px-4 py-2 focus:ring-2 focus:ring-violet-700 outline-none transition-all duration-200"
-                      value={session?.user?.name}
-                    />
+                    {isLoading ? (
+                      <SkeletonLoader variant="text" width="100%" height="40px" />
+                    ) : (
+                      <input
+                        type="text"
+                        className="w-full bg-[#0E0913] border border-violet-900/20 rounded-lg px-4 py-2 focus:ring-2 focus:ring-violet-700 outline-none transition-all duration-200"
+                        value={session?.user?.name}
+                      />
+                    )}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-400 mb-1">
                       Email
                     </label>
-                    <input
-                      type="email"
-                      className="w-full bg-[#0E0913] border border-violet-900/20 rounded-lg px-4 py-2 focus:ring-2 focus:ring-violet-700 outline-none transition-all duration-200"
-                      value={session?.user?.email}
-                    />
+                    {isLoading ? (
+                      <SkeletonLoader variant="text" width="100%" height="40px" />
+                    ) : (
+                      <input
+                        type="email"
+                        className="w-full bg-[#0E0913] border border-violet-900/20 rounded-lg px-4 py-2 focus:ring-2 focus:ring-violet-700 outline-none transition-all duration-200"
+                        value={session?.user?.email}
+                      />
+                    )}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-400 mb-1">
                       Site web
                     </label>
-                    <input
-                      type="url"
-                      className="w-full bg-[#0E0913] border border-violet-900/20 rounded-lg px-4 py-2 focus:ring-2 focus:ring-violet-700 outline-none transition-all duration-200"
-                      value={session?.user?.website || ''}
-                    />
+                    {isLoading ? (
+                      <SkeletonLoader variant="text" width="100%" height="40px" />
+                    ) : (
+                      <input
+                        type="url"
+                        className="w-full bg-[#0E0913] border border-violet-900/20 rounded-lg px-4 py-2 focus:ring-2 focus:ring-violet-700 outline-none transition-all duration-200"
+                        value={session?.user?.website || ''}
+                      />
+                    )}
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-400 mb-1">
                     Bio
                   </label>
-                  <textarea
-                    className="w-full bg-[#0E0913] border border-violet-900/20 rounded-lg px-4 py-2 h-32 focus:ring-2 focus:ring-violet-700 outline-none transition-all duration-200"
-                    value={session?.user?.bio || ''}
-                  />
+                  {isLoading ? (
+                    <SkeletonLoader variant="text" width="100%" height="128px" />
+                  ) : (
+                    <textarea
+                      className="w-full bg-[#0E0913] border border-violet-900/20 rounded-lg px-4 py-2 h-32 focus:ring-2 focus:ring-violet-700 outline-none transition-all duration-200"
+                      value={session?.user?.bio || ''}
+                    />
+                  )}
                 </div>
                 {/* Hidden Save button for now */}
                 <button type="submit" className="hidden text-[13.49px] my-2 text-white cursor-pointer bg-violet-800 hover:bg-violet-600 transition-all duration-200 w-[250px] h-[42px] border border-1 border-violet-500 text-[12px] flex justify-center items-center">

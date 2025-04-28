@@ -8,6 +8,7 @@ import LeftParticles from '../../Components/images/Group 194.svg';
 import RightParticles from '../../Components/images/Group 191.svg';
 import Link from 'next/link';
 import DoubleConfirmModal from '@/components/ui/DoubleConfirmModal';
+import SkeletonLoader from '../../../components/ui/skeletonLoader';
 
 interface Service {
   name: string;
@@ -100,8 +101,24 @@ const Integrations = () => {
         <div className='text-[25px] text-white'>Gérer mes <span className='gradient'>Intégrations</span></div>
         
         {isLoading ? (
-          <div className="flex items-center justify-center w-full py-12">
-            <Loader2 className="w-8 h-8 text-violet-500 animate-spin" />
+          <div className="w-full">
+            {/* Skeleton pour les services */}
+            {Array.from({ length: 2 }).map((_, index) => (
+              <div 
+                key={index} 
+                className='flex justify-between items-center py-3 px-6 bg-[#1B1B1B] transition-colors duration-300 rounded-[8px] p-1 shadow-md shadow-[#101010] border-t-2 border-gray-300/10 h-[82px] rounded-[6px] border border-[#292929] w-full sm:w-[500px] mb-6'>
+                <div className='flex items-center gap-4'>
+                  <div className="w-[40px] h-[40px] rounded-md bg-[#321A47] animate-pulse"></div>
+                  <div>
+                    <SkeletonLoader variant="text" width="120px" height="18px" />
+                    <SkeletonLoader variant="text" width="180px" height="14px" />
+                  </div>
+                </div>
+                <div>
+                  <SkeletonLoader variant="text" width="90px" height="36px" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : error ? (
           <div className="text-red-500 p-4 bg-red-500/10 rounded-lg w-full">
@@ -151,14 +168,23 @@ const Integrations = () => {
         {/* Separator */}
         <div className="border-b border-[#3B3B3B]/30 my-[50px] w-full sm:w-[500px]"></div>
 
-        <div className='text-[18px] text-gray-300'>Gère les autorisations et les accès accordés à Gitify.</div>
-        <button disabled className="cursor-not-allowed relative z-10 py-3 px-6 bg-[#1B1B1B] hover:bg-[#160E1E]  text-center transition-colors duration-300 rounded-[8px] p-1 shadow-md shadow-[#101010] border-t-2 border-gray-300/10 w-[280px] h-[52px] rounded-[6px] border border-[#292929] text-[16px] flex justify-center items-center">
-          <Image src={LeftParticles} alt="Left Particles" className="absolute left-0" />
-          <Link href="https://github.com/settings/connections/applications/gitify" className="flex items-center gap-2 text-white cursor-not-allowed">
-          Gérer les <span className="gradient cursor-not-allowed">Autorisations</span>
-          </Link>
-          <Image src={RightParticles} alt="Right Particles" className="absolute right-0" />
-        </button>
+        {isLoading ? (
+          <>
+            <SkeletonLoader variant="text" width="300px" height="20px" />
+            <div className="w-[280px] h-[52px] bg-[#321A47] animate-pulse rounded-[6px]"></div>
+          </>
+        ) : (
+          <>
+            <div className='text-[18px] text-gray-300'>Gère les autorisations et les accès accordés à Gitify.</div>
+            <button disabled className="cursor-not-allowed relative z-10 py-3 px-6 bg-[#1B1B1B] hover:bg-[#160E1E] text-center transition-colors duration-300 rounded-[8px] p-1 shadow-md shadow-[#101010] border-t-2 border-gray-300/10 w-[280px] h-[52px] rounded-[6px] border border-[#292929] text-[16px] flex justify-center items-center">
+              <Image src={LeftParticles} alt="Left Particles" className="absolute left-0" />
+              <Link href="https://github.com/settings/connections/applications/gitify" className="flex items-center gap-2 text-white cursor-not-allowed">
+              Gérer les <span className="gradient cursor-not-allowed">Autorisations</span>
+              </Link>
+              <Image src={RightParticles} alt="Right Particles" className="absolute right-0" />
+            </button>
+          </>
+        )}
       </div>
 
       {/* Modal de confirmation pour la révocation */}

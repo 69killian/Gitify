@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, Trophy, Star, Award } from "lucide-react";
 import Breadcrumb from "../../Components/breadcrumb";
 import useSWR from "swr";
 import { useSession } from "next-auth/react";
+import SkeletonLoader from '../../../components/ui/skeletonLoader';
 
 // Type pour les badges de l'utilisateur
 interface Badge {
@@ -55,9 +56,9 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const TrophyRoom = () => {
   // useSession est nécessaire pour l'authentification des API
-  useSession();
+  const { status: sessionStatus } = useSession();
   
-  const { data: userBadges, error, isLoading } = useSWR<UserBadgeType[]>('/api/userbadges', fetcher);
+  const { data: userBadges, error, isLoading: isLoadingBadges } = useSWR<UserBadgeType[]>('/api/userbadges', fetcher);
   const { 
     data: badgesProgressData, 
     error: progressError, 
@@ -66,8 +67,11 @@ const TrophyRoom = () => {
   
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  // État global de chargement
+  const isLoading = isLoadingBadges || isLoadingProgress || sessionStatus === "loading";
+
   // Si aucun badge n'est chargé, utiliser les badges statiques pour la démo
-  const displayBadges = !isLoading && !error && userBadges && userBadges.length > 0 
+  const displayBadges = !isLoadingBadges && !error && userBadges && userBadges.length > 0 
     ? userBadges 
     : staticBadges.map(badge => ({
         id: badge.id,
@@ -143,8 +147,13 @@ const TrophyRoom = () => {
       </div>
       
       {isLoading ? (
-        <div className="flex items-center justify-center h-[500px]">
-          <p className="text-2xl text-gray-400">Chargement de vos badges...</p>
+        <div className="relative mt-10 flex items-center justify-center h-[500px]">
+          <div className="flex flex-col items-center text-center">
+            {/* Skeleton du badge principal */}
+            <div className="w-[200px] h-[200px] rounded-full bg-[#321A47] animate-pulse mb-6"></div>
+            <SkeletonLoader variant="text" width="300px" height="50px" />
+            <SkeletonLoader variant="text" width="200px" height="20px" />
+          </div>
         </div>
       ) : error ? (
         <div className="flex items-center justify-center h-[500px]">
@@ -191,39 +200,62 @@ const TrophyRoom = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         {/* Carte Badges débloqués */}
-        <div className="relative z-10 py-3 px-6 bg-[#241730] rounded-sm border border-[#292929] transition-colors duration-300 shadow-md w-full h-[92px] rounded-[6px] flex items-center gap-4 p-4">
-          <Trophy className="w-8 h-8 text-violet-500" />
-          <div>
-            <div className="text-2xl font-bold gradient">{totalBadges}</div>
-            <div className="text-sm text-gray-400">Badges débloqués</div>
-          </div>
-        </div>
+        {isLoading ? (
+          <>
+            <SkeletonLoader variant="stat" />
+            <SkeletonLoader variant="stat" />
+            <SkeletonLoader variant="stat" />
+          </>
+        ) : (
+          <>
+            <div className="relative z-10 py-3 px-6 bg-[#241730] rounded-sm border border-[#292929] transition-colors duration-300 shadow-md w-full h-[92px] rounded-[6px] flex items-center gap-4 p-4">
+              <Trophy className="w-8 h-8 text-violet-500" />
+              <div>
+                <div className="text-2xl font-bold gradient">{totalBadges}</div>
+                <div className="text-sm text-gray-400">Badges débloqués</div>
+              </div>
+            </div>
 
-        {/* Carte Badges rares */}
-        <div className="relative z-10 py-3 px-6 bg-[#241730] rounded-sm border border-[#292929] transition-colors duration-300 shadow-md w-full h-[92px] rounded-[6px] flex items-center gap-4 p-4">
-          <Star className="w-8 h-8 text-violet-500" />
-          <div>
-            <div className="text-2xl font-bold gradient">{rareBadges}</div>
-            <div className="text-sm text-gray-400">Badges rares</div>
-          </div>
-        </div>
+            {/* Carte Badges rares */}
+            <div className="relative z-10 py-3 px-6 bg-[#241730] rounded-sm border border-[#292929] transition-colors duration-300 shadow-md w-full h-[92px] rounded-[6px] flex items-center gap-4 p-4">
+              <Star className="w-8 h-8 text-violet-500" />
+              <div>
+                <div className="text-2xl font-bold gradient">{rareBadges}</div>
+                <div className="text-sm text-gray-400">Badges rares</div>
+              </div>
+            </div>
 
-        {/* Carte Progression */}
-        <div className="relative z-10 py-3 px-6 bg-[#241730] rounded-sm border border-[#292929] transition-colors duration-300 shadow-md w-full h-[92px] rounded-[6px] flex items-center gap-4 p-4">
-          <Award className="w-8 h-8 text-violet-500" />
-          <div>
-            <div className="text-2xl font-bold gradient">{totalProgressPercentage || 0}%</div>
-            <div className="text-sm text-gray-400">Progression totale</div>
-          </div>
-        </div>
+            {/* Carte Progression */}
+            <div className="relative z-10 py-3 px-6 bg-[#241730] rounded-sm border border-[#292929] transition-colors duration-300 shadow-md w-full h-[92px] rounded-[6px] flex items-center gap-4 p-4">
+              <Award className="w-8 h-8 text-violet-500" />
+              <div>
+                <div className="text-2xl font-bold gradient">{totalProgressPercentage || 0}%</div>
+                <div className="text-sm text-gray-400">Progression totale</div>
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Section Badges en cours */}
       <div className="relative z-10 bg-[#241730] rounded-sm border border-[#292929] py-3 px-6 transition-colors duration-300 shadow-md border-t-2 w-full rounded-[6px] text-[16px] flex flex-col justify-start items-start gap-4 p-4 mb-8">
         <h2 className="text-xl font-semibold">Badges en cours</h2>
-        {isLoadingProgress ? (
-          <div className="flex justify-center w-full py-4">
-            <div className="animate-pulse text-violet-400">Chargement des progressions...</div>
+        {isLoading ? (
+          <div className="space-y-6 w-full py-4">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div key={index} className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="font-medium flex items-center gap-2">
+                    <SkeletonLoader variant="text" width="24px" height="24px" />
+                    <SkeletonLoader variant="text" width="150px" height="16px" />
+                  </span>
+                  <SkeletonLoader variant="text" width="60px" height="16px" />
+                </div>
+                <div className="h-2 bg-violet-900/20 rounded-full overflow-hidden">
+                  <div className="h-full bg-[#321A47] animate-pulse rounded-full" style={{ width: `${30 + index * 20}%` }} />
+                </div>
+              </div>
+            ))}
           </div>
         ) : progressError ? (
           <div className="text-red-400 text-sm py-2">Erreur lors du chargement des progressions</div>
@@ -266,7 +298,14 @@ const TrophyRoom = () => {
           ✨ Badges débloqués par catégorie ✨
         </h2>
         
-        {Object.keys(groupedBadges).length === 0 ? (
+        {isLoading ? (
+          <div>
+            <h3 className="text-lg font-semibold mb-4 text-violet-300">
+              <SkeletonLoader variant="text" width="150px" height="24px" />
+            </h3>
+            <SkeletonLoader variant="badge" count={8} />
+          </div>
+        ) : Object.keys(groupedBadges).length === 0 ? (
           <p className="text-center text-gray-400 py-10">Aucun badge débloqué pour le moment</p>
         ) : (
           <div className="space-y-10">

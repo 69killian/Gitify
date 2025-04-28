@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import useSWR, { mutate } from 'swr';
 import Link from 'next/link';
 import Image from "next/image";
+import SkeletonLoader from '../../../components/ui/skeletonLoader';
 
 type FeedbackType = "Suggestion" | "Bug" | "Question" | "Autre";
 type FeedbackStatus = "pending" | "En cours" | "Résolu" | "Répondu";
@@ -23,11 +24,14 @@ interface FeedbackItem {
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const FeedbackSupport = () => {
-  const { data: session } = useSession();
+  const { data: session, status: sessionStatus } = useSession();
+  const isSessionLoading = sessionStatus === "loading";
+  
   const { data: feedbackData, error: feedbackError } = useSWR(
     session ? '/api/feedback' : null,
     fetcher
   );
+  const isFeedbackLoading = session && !feedbackData && !feedbackError;
 
   // Vérifier si l'utilisateur est un administrateur (github_id 145566954)
   const isAdmin = session?.user?.github_id === "145566954";
@@ -146,7 +150,9 @@ const FeedbackSupport = () => {
             Gérer mes <span className="gradient">Feedback</span> 💬
           </h1>
           
-          {isAdmin && (
+          {isSessionLoading ? (
+            <SkeletonLoader variant="text" width="180px" height="40px" />
+          ) : isAdmin && (
             <Link href="/admin/feedback" className="btn-primary bg-gray-900 px-4 py-2 rounded-md border border-violet-700 hover:bg-gray-900/80 transition-all duration-200 flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-violet-400" />
               <span className="gradient inline-flex whitespace-nowrap">
@@ -164,7 +170,14 @@ const FeedbackSupport = () => {
         <div className="lg:col-span-2">
           <div className="card mb-6">
             <h2 className="text-xl font-semibold mb-6">Envoyer un feedback</h2>
-            {!session ? (
+            {isSessionLoading ? (
+              <div className="space-y-4">
+                <SkeletonLoader variant="text" width="100%" height="40px" />
+                <SkeletonLoader variant="text" width="100%" height="40px" />
+                <SkeletonLoader variant="text" width="100%" height="120px" />
+                <SkeletonLoader variant="text" width="180px" height="40px" />
+              </div>
+            ) : !session ? (
               <div className="text-center p-6 border border-violet-900/20 rounded-lg">
                 <p className="text-gray-400 mb-4">Connectez-vous pour soumettre un feedback</p>
                 <button className="btn-primary">Se connecter</button>
@@ -308,7 +321,24 @@ const FeedbackSupport = () => {
 
           <div className="space-y-6">
             <h2 className="text-2xl font-semibold">Mes feedbacks</h2>
-            {!session ? (
+            
+            {isSessionLoading ? (
+              // Skeleton loader pour la section des feedbacks lorsque la session charge
+              Array.from({ length: 3 }).map((_, index) => (
+                <div key={index} className="card">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-start gap-4">
+                      <SkeletonLoader variant="text" width="24px" height="24px" />
+                      <div>
+                        <SkeletonLoader variant="text" width="200px" height="20px" />
+                        <SkeletonLoader variant="text" width="150px" height="14px" />
+                      </div>
+                    </div>
+                    <SkeletonLoader variant="text" width="80px" height="22px" />
+                  </div>
+                </div>
+              ))
+            ) : !session ? (
               <div className="card text-center p-6">
                 <p className="text-gray-400">Connectez-vous pour voir vos feedbacks</p>
               </div>
@@ -316,10 +346,22 @@ const FeedbackSupport = () => {
               <div className="card bg-red-500/10 border border-red-500/30">
                 <p className="text-red-400">Une erreur s&apos;est produite lors du chargement de vos feedbacks</p>
               </div>
-            ) : !feedbackData ? (
-              <div className="card p-8 flex justify-center">
-                <Loader2 className="w-8 h-8 text-violet-500 animate-spin" />
-              </div>
+            ) : isFeedbackLoading ? (
+              // Skeleton loader pour la section des feedbacks lorsque les données chargent
+              Array.from({ length: 3 }).map((_, index) => (
+                <div key={index} className="card">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-start gap-4">
+                      <SkeletonLoader variant="text" width="24px" height="24px" />
+                      <div>
+                        <SkeletonLoader variant="text" width="200px" height="20px" />
+                        <SkeletonLoader variant="text" width="150px" height="14px" />
+                      </div>
+                    </div>
+                    <SkeletonLoader variant="text" width="80px" height="22px" />
+                  </div>
+                </div>
+              ))
             ) : feedbackData.length === 0 ? (
               <div className="card text-center p-6">
                 <p className="text-gray-400">Vous n&apos;avez pas encore envoyé de feedback</p>
@@ -368,65 +410,90 @@ const FeedbackSupport = () => {
         <div>
           <div className="card mb-6">
             <h3 className="text-lg font-semibold mb-4">FAQ</h3>
-            <div className="space-y-4">
-              {[
-                {
-                  question: "Comment fonctionne le système de badges ?",
-                  answer: "Les badges sont débloqués automatiquement lorsque vous atteignez certains objectifs dans vos contributions."
-                },
-                {
-                  question: "Comment synchroniser mon compte GitHub ?",
-                  answer: "Allez dans les paramètres d'intégration et suivez les étapes de connexion GitHub."
-                },
-                {
-                  question: "Comment participer aux événements ?",
-                  answer: "Consultez la page Événements et inscrivez-vous aux événements qui vous intéressent."
-                }
-              ].map((item) => (
-                <details key={item.question} className="group">
-                  <summary className="flex items-center justify-between cursor-pointer">
-                    <span className="text-sm">{item.question}</span>
-                    <span className="transition group-open:rotate-180">
-                      <svg
-                        fill="none"
-                        height="24"
-                        shapeRendering="geometricPrecision"
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="1.5"
-                        viewBox="0 0 24 24"
-                        width="24"
-                      >
-                        <path d="M6 9l6 6 6-6"></path>
-                      </svg>
-                    </span>
-                  </summary>
-                  <p className="mt-2 text-sm text-gray-400">
-                    {item.answer}
-                  </p>
-                </details>
-              
-              ))}
-            </div>
+            {isSessionLoading ? (
+              <div className="space-y-4">
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <div key={index}>
+                    <SkeletonLoader variant="text" width="100%" height="24px" />
+                    <div className="mt-2">
+                      <SkeletonLoader variant="text" width="90%" height="16px" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {[
+                  {
+                    question: "Comment fonctionne le système de badges ?",
+                    answer: "Les badges sont débloqués automatiquement lorsque vous atteignez certains objectifs dans vos contributions."
+                  },
+                  {
+                    question: "Comment synchroniser mon compte GitHub ?",
+                    answer: "Allez dans les paramètres d'intégration et suivez les étapes de connexion GitHub."
+                  },
+                  {
+                    question: "Comment participer aux événements ?",
+                    answer: "Consultez la page Événements et inscrivez-vous aux événements qui vous intéressent."
+                  }
+                ].map((item) => (
+                  <details key={item.question} className="group">
+                    <summary className="flex items-center justify-between cursor-pointer">
+                      <span className="text-sm">{item.question}</span>
+                      <span className="transition group-open:rotate-180">
+                        <svg
+                          fill="none"
+                          height="24"
+                          shapeRendering="geometricPrecision"
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="1.5"
+                          viewBox="0 0 24 24"
+                          width="24"
+                        >
+                          <path d="M6 9l6 6 6-6"></path>
+                        </svg>
+                      </span>
+                    </summary>
+                    <p className="mt-2 text-sm text-gray-400">
+                      {item.answer}
+                    </p>
+                  </details>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="card">
             <h3 className="text-lg font-semibold mb-4">Ressources utiles</h3>
-            <div className="space-y-4">
-              <a href="#" className="block p-4 bg-violet-900/20 rounded-lg hover:bg-violet-900/30 transition-colors">
-                <h4 className="font-medium mb-1">Guide de démarrage</h4>
-                <p className="text-sm text-gray-400">Apprenez les bases de Gitify</p>
-              </a>
-              <a href="#" className="block p-4 bg-violet-900/20 rounded-lg hover:bg-violet-900/30 transition-colors">
-                <h4 className="font-medium mb-1">Documentation API</h4>
-                <p className="text-sm text-gray-400">Intégrez Gitify à vos projets</p>
-              </a>
-              <a href="#" className="block p-4 bg-violet-900/20 rounded-lg hover:bg-violet-900/30 transition-colors">
-                <h4 className="font-medium mb-1">Blog technique</h4>
-                <p className="text-sm text-gray-400">Dernières actualités et tutoriels</p>
-              </a>
-            </div>
+            {isSessionLoading ? (
+              <div className="space-y-4">
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <SkeletonLoader 
+                    key={index}
+                    variant="text" 
+                    width="100%" 
+                    height="80px"
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <a href="#" className="block p-4 bg-violet-900/20 rounded-lg hover:bg-violet-900/30 transition-colors">
+                  <h4 className="font-medium mb-1">Guide de démarrage</h4>
+                  <p className="text-sm text-gray-400">Apprenez les bases de Gitify</p>
+                </a>
+                <a href="#" className="block p-4 bg-violet-900/20 rounded-lg hover:bg-violet-900/30 transition-colors">
+                  <h4 className="font-medium mb-1">Documentation API</h4>
+                  <p className="text-sm text-gray-400">Intégrez Gitify à vos projets</p>
+                </a>
+                <a href="#" className="block p-4 bg-violet-900/20 rounded-lg hover:bg-violet-900/30 transition-colors">
+                  <h4 className="font-medium mb-1">Blog technique</h4>
+                  <p className="text-sm text-gray-400">Dernières actualités et tutoriels</p>
+                </a>
+              </div>
+            )}
           </div>
         </div>
       </div>

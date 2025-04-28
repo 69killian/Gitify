@@ -5,6 +5,7 @@ import Breadcrumb from './breadcrumb';
 import { useSession } from 'next-auth/react';
 import useSWR, { mutate } from 'swr';
 import Link from 'next/link';
+import SkeletonLoader from '../../components/ui/skeletonLoader';
 
 // Type pour les badges de l'utilisateur
 interface Badge {
@@ -119,18 +120,21 @@ const staticBadges: UserBadgeType[] = [
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const Content = () => {
-  const { data: session } = useSession();
-  const { data: userBadges, error, isLoading } = useSWR<UserBadgeType[]>('/api/userbadges', fetcher);
+  const { data: session, status: sessionStatus } = useSession();
+  const { data: userBadges, error, isLoading: isLoadingBadges } = useSWR<UserBadgeType[]>('/api/userbadges', fetcher);
   
   // Récupération des données de progression
-  const { data: progressData } = 
+  const { data: progressData, isLoading: isLoadingProgress } = 
     useSWR<ProgressDataType>(session ? '/api/progress' : null, fetcher);
   
   // État pour le chargement de la mise à jour de la progression
   const [isUpdatingProgress, setIsUpdatingProgress] = useState(false);
 
+  // Déterminer si les données sont en cours de chargement
+  const isLoading = isLoadingBadges || isLoadingProgress || sessionStatus === "loading";
+
   // Si aucun badge n'est chargé, utiliser les badges statiques pour la démo
-  const displayBadges = !isLoading && !error && userBadges && userBadges.length > 0 
+  const displayBadges = !isLoadingBadges && !error && userBadges && userBadges.length > 0 
     ? userBadges 
     : staticBadges;
 
@@ -229,7 +233,11 @@ const Content = () => {
           {/* Left Content */}
           <div className="md:w-1/2">
           <div className="text-[44px] mb-[20px]">
-              Bienvenue, <span className='gradient'>{session?.user?.name}</span> 🖐️ {/*Put username here */}
+              {isLoading ? (
+                <SkeletonLoader variant="text" width="300px" height="50px" />
+              ) : (
+                <>Bienvenue, <span className='gradient'>{session?.user?.name}</span> 🖐️</>
+              )}
             </div>
             <div className="text-[26px] mb-[20px]">
               Mes <span className="gradient">Contributions</span>
@@ -271,49 +279,59 @@ const Content = () => {
         <div className="border-none border-[#1D1D1D] my-[50px]"></div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4 mb-[40px]">
+          {isLoading ? (
+            // Afficher des skeleton loaders pour les statistiques
+            <>
+              <SkeletonLoader variant="stat" />
+              <SkeletonLoader variant="stat" />
+              <SkeletonLoader variant="stat" />
+              <SkeletonLoader variant="stat" />
+            </>
+          ) : (
+            // Afficher les statistiques réelles
+            <>
+              <div className="text-[14px] flex items-center gap-4">
+                <div className="text-[75px] gradient">{currentStreak}</div>
+                <div className="grid gap-2">
+                  <div className="text-[#7E7F81]">Jours de Streak</div>
+                  <div className="text-violet-400 inline-block w-[60px] whitespace-nowrap bg-violet-900/40 rounded-full border border-violet-500">
+                    {"+ " + currentStreak}
+                  </div>
+                </div>
+              </div>
 
-        <div className="text-[14px] flex items-center gap-4">
-        <div className="text-[75px] gradient">{currentStreak}</div>
-        <div className="grid gap-2">
-          <div className="text-[#7E7F81]">Jours de Streak</div>
-          <div className="text-violet-400 inline-block w-[60px] whitespace-nowrap bg-violet-900/40 rounded-full border border-violet-500">
-            {"+ " + currentStreak}
-          </div>
+              <div className='text-[14px] flex items-center gap-4'>
+                <div className='text-[75px] gradient'>{longestStreak}</div>
+                <div className='grid gap-2'>
+                  <div className='text-[#7E7F81]'>Record de Streak</div>
+                  <div className="text-violet-400 inline-block w-[60px] whitespace-nowrap bg-violet-900/40 rounded-full border border-violet-500 px-1">
+                    {"+ " + longestStreak}
+                  </div>
+                </div>
+              </div>
+
+              <div className='text-[14px] flex items-center gap-4'>
+                <div className='text-[75px] gradient'>{completedChallengesCount}</div>
+                <div className='grid gap-2'>
+                  <div className='text-[#7E7F81]'>Défis Réalisés</div>
+                  <div className="text-violet-400 inline-block w-[60px] whitespace-nowrap bg-violet-900/40 rounded-full border border-violet-500 px-1">
+                    {"+ " + completedChallengesCount}
+                  </div>
+                </div>
+              </div>
+
+              <div className='text-[14px] flex items-center gap-4'>
+                <div className='text-[75px] gradient'>{totalBadges}</div>
+                <div className='grid gap-2'>
+                  <div className='text-[#7E7F81]'>Badges débloqués</div>
+                  <div className="text-violet-400 inline-block w-[60px] whitespace-nowrap bg-violet-900/40 rounded-full border border-violet-500 px-1">
+                    {"+ " + totalBadges}
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
         </div>
-      </div>
-
-
-          <div className='text-[14px] flex items-center gap-4'>
-            <div className='text-[75px] gradient'>{longestStreak}</div>
-            <div className='grid gap-2'>
-              <div className='text-[#7E7F81]'>Record de Streak</div>
-              <div className="text-violet-400 inline-block w-[60px] whitespace-nowrap bg-violet-900/40 rounded-full border border-violet-500 px-1">
-            {"+ " + longestStreak}
-          </div>
-            </div>
-          </div>
-
-          <div className='text-[14px] flex items-center gap-4'>
-            <div className='text-[75px] gradient'>{completedChallengesCount}</div>
-            <div className='grid gap-2'>
-              <div className='text-[#7E7F81]'>Défis Réalisés</div>
-              <div className="text-violet-400 inline-block w-[60px] whitespace-nowrap bg-violet-900/40 rounded-full border border-violet-500 px-1">
-            {"+ " + completedChallengesCount}
-          </div>
-            </div>
-          </div>
-
-          <div className='text-[14px] flex items-center gap-4'>
-            <div className='text-[75px] gradient'>{totalBadges}</div>
-            <div className='grid gap-2'>
-              <div className='text-[#7E7F81]'>Badges débloqués</div>
-              <div className="text-violet-400 inline-block w-[60px] whitespace-nowrap bg-violet-900/40 rounded-full border border-violet-500 px-1">
-            {"+ " + totalBadges}
-          </div>
-            </div>
-          </div>
-        </div>
-
 
         {/* Section des badges récents */}
         <div className="mt-[30px] mb-[30px] flex items-center justify-between">
@@ -327,33 +345,46 @@ const Content = () => {
           </Link>
         </div>
 
-        <div className="mt-10  rounded-md from-black/30 via-transparent to-black/30 backdrop-blur-md bg-opacity-30">
-        
-        {Object.keys(groupedBadges).length === 0 ? (
-          <p className="text-center text-gray-400 py-10">Aucun badge débloqué pour le moment</p>
-        ) : (
-          <div className="space-y-10">
-            {Object.entries(groupedBadges).map(([category, badges]) => (
-              <div key={category} className="mb-8">
-                <h3 className="text-lg font-semibold mb-4 text-violet-300">{category}</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {badges.map((userBadge) => (
-                    <div 
-                      key={userBadge.id} 
-                      className="bg-[#241730] border border-violet-900/30 p-4 rounded-md shadow-md flex flex-col items-center text-center"
-                    >
-                      <div className="text-4xl mb-2">{userBadge.badge.icon}</div>
-                      <div className="font-semibold text-sm">{userBadge.badge.name}</div>
-                      <div className="text-xs text-violet-400 mt-1">{userBadge.badge.description}</div>
+        <div className="mt-10 rounded-md from-black/30 via-transparent to-black/30 backdrop-blur-md bg-opacity-30">
+          {isLoading ? (
+            // Afficher des skeleton loaders pour les badges
+            <div className="space-y-10">
+              <div className="mb-8">
+                <h3 className="text-lg font-semibold mb-4 text-violet-300">
+                  <SkeletonLoader variant="text" width="150px" height="24px" />
+                </h3>
+                <SkeletonLoader variant="badge" count={8} />
+              </div>
+            </div>
+          ) : (
+            // Afficher les badges réels
+            <>
+              {Object.keys(groupedBadges).length === 0 ? (
+                <p className="text-center text-gray-400 py-10">Aucun badge débloqué pour le moment</p>
+              ) : (
+                <div className="space-y-10">
+                  {Object.entries(groupedBadges).map(([category, badges]) => (
+                    <div key={category} className="mb-8">
+                      <h3 className="text-lg font-semibold mb-4 text-violet-300">{category}</h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {badges.map((userBadge) => (
+                          <div 
+                            key={userBadge.id} 
+                            className="bg-[#241730] border border-violet-900/30 p-4 rounded-md shadow-md flex flex-col items-center text-center"
+                          >
+                            <div className="text-4xl mb-2">{userBadge.badge.icon}</div>
+                            <div className="font-semibold text-sm">{userBadge.badge.name}</div>
+                            <div className="text-xs text-violet-400 mt-1">{userBadge.badge.description}</div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   ))}
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
+              )}
+            </>
+          )}
+        </div>
       </section>
     </>
   );

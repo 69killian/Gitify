@@ -3,6 +3,7 @@ import { useState } from "react";
 import useSWR from "swr";
 import Breadcrumb from "../../Components/breadcrumb";
 import { Trophy, Star, Award, Timer, ChevronRight, ChevronLeft, CheckCircle, X } from "lucide-react";
+import SkeletonLoader from '../../../components/ui/skeletonLoader';
 
 // Définition des types
 type ChallengeDifficulty = "Facile" | "Moyenne" | "Difficile" | "Extrême";
@@ -165,10 +166,99 @@ const Content = () => {
           <h1 className="text-[60px] font-poppins drop-shadow-lg" style={{ fontFamily: "poppins, sans-serif" }}>
             <span className="gradient-gold">Choisis ton Défi</span> 🎯
           </h1>
-          <div className="mt-10 flex justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-violet-500"></div>
+          <p className="text-gray-400 mt-2 text-center">
+            Relevez des défis quotidiens et hebdomadaires pour gagner des récompenses exclusives.
+          </p>
+        </div>
+
+        {/* Skeleton pour les statistiques */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
+          <SkeletonLoader variant="stat" />
+          <SkeletonLoader variant="stat" />
+          <SkeletonLoader variant="stat" />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8 mt-10">
+          {/* Skeleton pour les défis en cours */}
+          <div className="space-y-6 bg-[#241730] rounded-sm border border-[#292929] p-10">
+            <h2 className="text-2xl font-semibold">Challenges actifs</h2>
+            
+            {Array.from({ length: 2 }).map((_, index) => (
+              <div key={index} className="card">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <SkeletonLoader variant="text" width="180px" height="20px" />
+                    <SkeletonLoader variant="text" width="280px" height="16px" />
+                  </div>
+                  <SkeletonLoader variant="text" width="100px" height="18px" />
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <SkeletonLoader variant="text" width="100px" height="14px" />
+                    <SkeletonLoader variant="text" width="40px" height="14px" />
+                  </div>
+                  <div className="h-2 bg-violet-900/20 rounded-full overflow-hidden">
+                    <div className="h-full bg-[#321A47] animate-pulse rounded-full" style={{ width: `${50 + index * 20}%` }} />
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <SkeletonLoader variant="text" width="200px" height="14px" />
+                </div>
+              </div>
+            ))}
           </div>
-          <p className="text-gray-400 mt-4">Chargement des défis...</p>
+
+          {/* Skeleton pour les défis complétés */}
+          <div className="space-y-6 bg-[#241730] rounded-sm border border-[#292929] p-10">
+            <h2 className="text-2xl font-semibold">Challenges complétés</h2>
+            
+            {Array.from({ length: 2 }).map((_, index) => (
+              <div key={index} className="card">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <SkeletonLoader variant="text" width="180px" height="20px" />
+                    <SkeletonLoader variant="text" width="280px" height="16px" />
+                  </div>
+                  <SkeletonLoader variant="text" width="30px" height="30px" />
+                </div>
+                <div className="mt-4 flex justify-between items-center">
+                  <SkeletonLoader variant="text" width="180px" height="14px" />
+                  <SkeletonLoader variant="text" width="100px" height="14px" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Skeleton pour les défis disponibles */}
+        <div className="space-y-6 bg-[#241730] rounded-sm border border-[#292929] p-10 mb-8">
+          <div className="flex justify-between items-center">
+            <h2 className="text-2xl font-semibold">Challenges disponibles</h2>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-[#321A47] animate-pulse rounded-full"></div>
+              <SkeletonLoader variant="text" width="60px" height="16px" />
+              <div className="w-8 h-8 bg-[#321A47] animate-pulse rounded-full"></div>
+            </div>
+          </div>
+          
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div key={index} className="card">
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <SkeletonLoader variant="text" width="30px" height="30px" />
+                    <SkeletonLoader variant="text" width="180px" height="20px" />
+                  </div>
+                  <SkeletonLoader variant="text" width="280px" height="16px" />
+                </div>
+                <SkeletonLoader variant="text" width="70px" height="24px" />
+              </div>
+              <div className="flex justify-between items-center mt-4">
+                <SkeletonLoader variant="text" width="120px" height="16px" />
+                <div className="w-[200px] h-[42px] bg-[#321A47] animate-pulse rounded-md"></div>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
     );
