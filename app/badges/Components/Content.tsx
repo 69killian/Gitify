@@ -42,15 +42,6 @@ interface BadgesProgressResponse {
   totalProgress: number;
 }
 
-// Pour le développement, utilisation des badges statiques en fallback
-const staticBadges = [
-  { id: 1, badge: "Streak Newbie", description: "Premier streak atteint", condition: "3 jours de streak", icon: "🔥", category: "🔥 Streaks" },
-  { id: 2, badge: "Streak Enthusiast", description: "Tu commences à être sérieux", condition: "7 jours de streak", icon: "🔥🔥", category: "🔥 Streaks" },
-  { id: 3, badge: "Streak Warrior", description: "La régularité paie !", condition: "15 jours de streak", icon: "⚔️🔥", category: "🔥 Streaks" },
-  { id: 4, badge: "Streak Master", description: "Tu es un vrai grinder", condition: "30 jours de streak", icon: "🏅🔥", category: "🔥 Streaks" },
-  { id: 5, badge: "Streak God", description: "Plus déterminé que jamais", condition: "100 jours de streak", icon: "🏆🔥", category: "🔥 Streaks" }
-];
-
 // Fonction pour récupérer les données
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -70,21 +61,10 @@ const TrophyRoom = () => {
   // État global de chargement
   const isLoading = isLoadingBadges || isLoadingProgress || sessionStatus === "loading";
 
-  // Si aucun badge n'est chargé, utiliser les badges statiques pour la démo
+  // Si aucun badge n'est chargé, retourner un tableau vide
   const displayBadges = !isLoadingBadges && !error && userBadges && userBadges.length > 0 
     ? userBadges 
-    : staticBadges.map(badge => ({
-        id: badge.id,
-        badge: {
-          id: badge.id,
-          name: badge.badge,
-          description: badge.description,
-          icon: badge.icon,
-          category: badge.category,
-          condition: badge.condition,
-          created_at: new Date().toISOString()
-        }
-      }));
+    : [];
 
   // Réinitialiser l'index quand les badges changent
   useEffect(() => {
@@ -119,17 +99,13 @@ const TrophyRoom = () => {
   // Utiliser la progression totale de l'API ou une valeur par défaut
   const totalProgressPercentage = !isLoadingProgress && !progressError && badgesProgressData 
     ? badgesProgressData.totalProgress 
-    : Math.min(Math.round((totalBadges / 50) * 100), 100); // Fallback: 50 badges max
+    : 0; // Fallback: 0% si pas de badges
 
   // Simuler les badges rares
   const rareBadges = Math.round(totalBadges * 0.4); // 40% des badges sont considérés comme rares
 
   // Fallback pour les badges en progression si l'API échoue
-  const fallbackBadgesInProgress = [
-    { name: 'Streak Master', progress: 75, current: 23, target: 30, icon: '🏅🔥', description: null },
-    { name: 'Code Legend', progress: 45, current: 450, target: 1000, icon: '👑', description: null },
-    { name: 'PR Hero', progress: 60, current: 6, target: 10, icon: '🦸', description: null },
-  ];
+  const fallbackBadgesInProgress: BadgeProgress[] = [];
 
   // Utiliser les données dynamiques ou le fallback
   const badgesInProgress = (!isLoadingProgress && !progressError && badgesProgressData?.badgesInProgress) 
@@ -160,8 +136,9 @@ const TrophyRoom = () => {
           <p className="text-2xl text-red-500">Erreur lors du chargement des badges</p>
         </div>
       ) : displayBadges.length === 0 ? (
-        <div className="flex items-center justify-center h-[500px]">
-          <p className="text-2xl text-gray-400">Vous n&apos;avez pas encore débloqué de badges</p>
+        <div className="flex flex-col items-center justify-center h-[500px] text-center">
+          <p className="text-2xl text-gray-400 mb-4">Vous n&apos;avez pas encore de badges</p>
+          <p className="text-violet-400 text-lg">Commencez à relever des défis pour débloquer vos premiers badges !</p>
         </div>
       ) : (
         <div className="relative mt-10 flex items-center justify-center h-[500px]">

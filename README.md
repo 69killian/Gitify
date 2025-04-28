@@ -1,6 +1,14 @@
 # Gitify – La gamification de votre parcours open source
+<<<<<<< HEAD
 
 Gitify est une application SaaS open source conçue pour transformer votre activité GitHub en une expérience ludique et motivante. Elle vous permet de suivre votre progression, de collectionner des badges et de relever des défis pour gamifier vos contributions open source.
+=======
+![Screen](screen)
+
+Gitify est un micro SaaS open source conçue pour transformer votre activité GitHub en une expérience ludique et motivante. Elle vous permet de suivre votre progression, de collectionner des badges et de relever des défis pour gamifier vos contributions open source.
+
+DEMO : warmhearted-imagine-949567.framer.app/
+>>>>>>> 08b6d4d52d1d0dd60de8e6bf1dd3b1d1e9763a60
 
 ## Fonctionnalités
 
