@@ -277,8 +277,8 @@ const StreakPage = () => {
         </div>
       </div>
 
-      {/* Call to Action */}
-      <div className="mt-12 gap-5 text-center items-center flex flex-col mb-10">
+      {/* Call to Action HIDDEN FOR NOW */}
+      <div className="hidden mt-12 gap-5 text-center items-center flex flex-col mb-10">
         <h2 className="text-2xl font-semibold">Passe à la version <span className="gradient">Pro</span></h2>
         <p className="text-gray-400">Débloque des fonctionnalités avancées et améliore ton suivi de progression.</p>
         <button className="relative z-10 py-3 px-6 bg-[#1B1B1B] hover:bg-[#160E1E] text-center transition-colors duration-300 rounded-[8px] p-1 shadow-md shadow-[#101010] border-t-2 border-gray-300/10 w-[280px] h-[52px] rounded-[6px] border border-[#292929] text-[16px] flex justify-center items-center">

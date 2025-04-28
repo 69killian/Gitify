@@ -109,7 +109,8 @@ const Sidebar = () => {
           </div>
         );
       })}
-      <button className="bg-[#1B1B1B] hover:bg-[#121212] transition-all duration-200 w-[186px] h-[32px] rounded-[6px] border border-1 border-[#292929] text-[12px] relative flex justify-center items-center">
+      {/* Hidden Pro Version Button for now */}
+      <button className="hidden bg-[#1B1B1B] hover:bg-[#121212] transition-all duration-200 w-[186px] h-[32px] rounded-[6px] border border-1 border-[#292929] text-[12px] relative flex justify-center items-center">
         <Image src={LeftParticles} alt="Left Particles" className="absolute left-0" />
         <Link href="https://warmhearted-imagine-949567.framer.app/" target="_blank">
         Upgrade to <span className="gradient">Pro</span>
