@@ -14,7 +14,7 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GITHUB_SECRET as string,
       authorization: {
         params: {
-          scope: 'read:user user:email repo'
+          scope: 'read:user user:email read:repo'
         }
       }
     }),
@@ -102,7 +102,7 @@ export const authOptions: NextAuthOptions = {
               access_token: account.access_token,
               refresh_token: account.refresh_token,
               token_expires_at: account.expires_at ? new Date(account.expires_at * 1000) : null,
-              permissions: ["Lecture et écriture des dépôts publics"],
+              permissions: ["Lecture des dépôts publics"],
               updated_at: new Date()
             },
             create: {
@@ -112,7 +112,7 @@ export const authOptions: NextAuthOptions = {
               access_token: account.access_token,
               refresh_token: account.refresh_token,
               token_expires_at: account.expires_at ? new Date(account.expires_at * 1000) : null,
-              permissions: ["Lecture et écriture des dépôts publics"],
+              permissions: ["Lecture des dépôts publics"],
               created_at: new Date(),
               updated_at: new Date()
             }
