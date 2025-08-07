@@ -148,3 +148,5 @@ Gitify est un projet open source sous licence [MIT License](LICENSE).
 ---
 
 Gitify transforme vos contributions GitHub en une aventure ludique et motivante. Rejoignez la communauté et commencez à gamifier votre parcours open source dès aujourd'hui !
+
+V2 coming soon
