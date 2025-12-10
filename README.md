@@ -8,7 +8,7 @@ DEMO : warmhearted-imagine-949567.framer.app/
 ## Fonctionnalités
 
 - **Authentification GitHub via OAuth**  
-  Connexion simple avec GitHub. Synchronisation automatique de vos données publiques (profil, contributions, repositories) via **NextAuth.js** et **TypeScript**.
+  Connexion avec GitHub. Synchronisation automatique de vos données publiques (profil, contributions, repositories) via **NextAuth.js** et **TypeScript**.
 
 - **Tableau de bord utilisateur dynamique**  
   Calendrier interactif des contributions, vue d'ensemble et historique des streaks, développés avec **React**, **Tailwind CSS** et **TypeScript**.
